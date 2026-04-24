@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>어썸HR · 강사 관리</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="어썸HR">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FFB088">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+CiAgPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNGRkIwODgiLz4KICA8dGV4dCB4PSI5MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLEJsaW5rTWFjU3lzdGVtRm9udCxzYW5zLXNlcmlmIiBmb250LXNpemU9Ijc0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgbGV0dGVyLXNwYWNpbmc9Ii0yIj5IUjwvdGV4dD4KPC9zdmc+">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiB2aWV3Qm94PSIwIDAgMTkyIDE5MiI+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSI0MiIgZmlsbD0iI0ZGQjA4OCIvPgogIDx0ZXh0IHg9Ijk2IiB5PSI5NiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sQmxpbmtNYWNTeXN0ZW1Gb250LHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNzgiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNGRkZGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIiBsZXR0ZXItc3BhY2luZz0iLTIiPkhSPC90ZXh0Pgo8L3N2Zz4=">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIuyWtOyNuEhSIiwgInNob3J0X25hbWUiOiAi7Ja07I24SFIiLCAiZGVzY3JpcHRpb24iOiAi7Ja07I247J6J6riA66as7ImsIOqwleyCrCDqtIDrpqwg7Iuc7Iqk7YWcIiwgInN0YXJ0X3VybCI6ICIuLyIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjRkZCMDg4IiwgInRoZW1lX2NvbG9yIjogIiNGRkIwODgiLCAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLCAibGFuZyI6ICJrbyIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSXhPVElpSUdobGFXZG9kRDBpTVRreUlpQjJhV1YzUW05NFBTSXdJREFnTVRreUlERTVNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJakU1TWlJZ2FHVnBaMmgwUFNJeE9USWlJSEo0UFNJME1pSWdabWxzYkQwaUkwWkdRakE0T0NJdlBnb2dJRHgwWlhoMElIZzlJamsySWlCNVBTSTVOaUlnWm05dWRDMW1ZVzFwYkhrOUlpMWhjSEJzWlMxemVYTjBaVzBzUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTEhOaGJuTXRjMlZ5YVdZaUlHWnZiblF0YzJsNlpUMGlOemdpSUdadmJuUXRkMlZwWjJoMFBTSTNNREFpSUdacGJHdzlJaU5HUmtaR1JrWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUdSdmJXbHVZVzUwTFdKaGMyVnNhVzVsUFNKalpXNTBjbUZzSWlCc1pYUjBaWEl0YzNCaFkybHVaejBpTFRJaVBraFNQQzkwWlhoMFBnbzhMM04yWno0PSIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJR1pwYkd3OUlpTkdSa0l3T0RnaUx6NEtJQ0E4ZEdWNGRDQjRQU0l5TlRZaUlIazlJakkxTmlJZ1ptOXVkQzFtWVcxcGJIazlJaTFoY0hCc1pTMXplWE4wWlcwc1FteHBibXROWVdOVGVYTjBaVzFHYjI1MExITmhibk10YzJWeWFXWWlJR1p2Ym5RdGMybDZaVDBpTWpBNElpQm1iMjUwTFhkbGFXZG9kRDBpTnpBd0lpQm1hV3hzUFNJalJrWkdSa1pHSWlCMFpYaDBMV0Z1WTJodmNqMGliV2xrWkd4bElpQmtiMjFwYm1GdWRDMWlZWE5sYkdsdVpUMGlZMlZ1ZEhKaGJDSWdiR1YwZEdWeUxYTndZV05wYm1jOUlpMDFJajVJVWp3dmRHVjRkRDRLUEM5emRtYysiLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifV19">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f7f6f3;--bg3:#f0efe9;
+  --text:#1a1a1a;--text2:#6b6a65;--text3:#9e9d98;
+  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
+  --green:#1D9E75;--green-bg:#E1F5EE;--green-text:#085041;
+  --amber:#EF9F27;--amber-bg:#FAEEDA;--amber-text:#633806;
+  --red:#E24B4A;--red-bg:#FCEBEB;--red-text:#791F1F;
+  --blue-bg:#E6F1FB;--blue-text:#185FA5;
+  --purple-bg:#EEEDFE;--purple-text:#3C3489;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:var(--bg3);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* topbar */
+.topbar{background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
+.topbar-inner{max-width:980px;margin:0 auto;padding:0 16px}
+.logo-row{display:flex;align-items:baseline;gap:10px;padding:10px 0 0}
+.logo-name{font-size:14px;font-weight:600}
+.logo-sub{font-size:11px;color:var(--text3)}
+.nav-tabs{display:flex;overflow-x:auto;scrollbar-width:none;margin-top:6px}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{display:flex;align-items:center;gap:4px;padding:8px 12px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .12s;flex-shrink:0}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--text);font-weight:500;border-bottom-color:var(--green)}
+.tab-badge{background:var(--red-bg);color:var(--red-text);font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;line-height:1.4}
+
+/* layout */
+.main{max-width:980px;margin:0 auto;padding:22px 16px}
+.page{display:none}.page.active{display:block}
+.page-title{font-size:20px;font-weight:600;margin-bottom:3px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* cards */
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.metric{background:var(--bg2);border-radius:var(--radius);padding:14px;text-align:center}
+.metric-label{font-size:11px;color:var(--text2);margin-bottom:3px}
+.metric-val{font-size:24px;font-weight:600}
+.mv-safe{color:var(--green)}.mv-warn{color:var(--amber)}.mv-danger{color:var(--red)}.mv-purple{color:var(--purple-text)}
+
+/* teacher rows */
+.t-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.t-row:last-child{border-bottom:none}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.av-safe{background:var(--green-bg);color:var(--green-text)}
+.av-warn{background:var(--amber-bg);color:var(--amber-text)}
+.av-danger{background:var(--red-bg);color:var(--red-text)}
+.av-ex{background:var(--bg3);color:var(--text3)}
+.t-name{font-size:14px;font-weight:500}.t-sub{font-size:12px;color:var(--text2)}.ti{flex:1}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.b-safe{background:var(--green-bg);color:var(--green-text)}
+.b-warn{background:var(--amber-bg);color:var(--amber-text)}
+.b-danger{background:var(--red-bg);color:var(--red-text)}
+.b-info{background:var(--blue-bg);color:var(--blue-text)}
+.b-purple{background:var(--purple-bg);color:var(--purple-text)}
+.b-ex{background:var(--bg3);color:var(--text2)}
+
+/* risk bars */
+.risk-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.risk-label{font-size:12px;color:var(--text2);width:90px;flex-shrink:0}
+.risk-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.risk-fill{height:100%;border-radius:3px}
+.rf-green{background:var(--green)}.rf-amber{background:var(--amber)}.rf-red{background:var(--red)}.rf-purple{background:#7F77DD}
+.risk-num{font-size:12px;font-weight:500;width:36px;text-align:right}
+
+/* forms */
+.form-grid{display:grid;gap:12px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px}
+select,textarea,input[type=text],input[type=date],input[type=number]{width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--text);font-family:inherit}
+select:focus,textarea:focus,input:focus{outline:none;border-color:var(--green)}
+textarea{resize:vertical;min-height:68px}
+input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
+.score-box{text-align:center;padding:7px;background:var(--bg2);border-radius:var(--radius);font-size:18px;font-weight:600}
+.btn{padding:9px 16px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text);font-size:13px;cursor:pointer;width:100%;font-family:inherit;transition:background .12s}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.btn-primary:hover{opacity:.85}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}.btn-green:hover{opacity:.85}
+.btn-sm{padding:5px 10px;font-size:12px;width:auto}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* timeline */
+.tl{padding-left:20px;position:relative}
+.tl::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:var(--border2)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-dot{position:absolute;left:-17px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--text3)}
+.tl-dot.done{background:var(--green)}.tl-dot.now{background:var(--amber)}.tl-dot.blue{background:#378ADD}.tl-dot.purple{background:#7F77DD}
+.tl-date{font-size:11px;color:var(--text3);margin-bottom:1px}.tl-text{font-size:13px;font-weight:500}.tl-sub{font-size:12px;color:var(--text2);margin-top:1px}
+
+/* toggle */
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:13px}.toggle-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.toggle-btn{width:38px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .18s;flex-shrink:0}
+.toggle-btn.on{background:var(--green)}.toggle-btn.off{background:var(--border2)}
+.toggle-btn::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:white;transition:left .18s}
+.toggle-btn.on::after{left:19px}.toggle-btn.off::after{left:3px}
+
+/* signals */
+.signal-item{display:flex;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.signal-item:last-child{border-bottom:none}
+.sig-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.sd-red{background:var(--red-bg);color:var(--red-text)}
+.sd-amber{background:var(--amber-bg);color:var(--amber-text)}
+.sd-green{background:var(--green-bg);color:var(--green-text)}
+.sig-title{font-size:13px;font-weight:500;margin-bottom:2px}.sig-desc{font-size:12px;color:var(--text2)}
+
+/* notices */
+.notice{background:var(--blue-bg);border:0.5px solid rgba(24,95,165,.2);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--blue-text);margin-bottom:12px}
+.warn-notice{background:var(--amber-bg);border-color:rgba(239,159,39,.3);color:var(--amber-text)}
+.danger-notice{background:var(--red-bg);border-color:rgba(226,75,74,.3);color:var(--red-text)}
+.success-notice{background:var(--green-bg);border-color:rgba(29,158,117,.25);color:var(--green-text)}
+.purple-notice{background:var(--purple-bg);border-color:rgba(127,119,221,.3);color:var(--purple-text)}
+
+/* log items */
+.log-item{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px}
+.log-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.log-detail{font-size:12px;color:var(--text2);line-height:1.8}
+.log-promise{background:var(--blue-bg);border-radius:var(--radius);padding:8px 10px;font-size:12px;color:var(--blue-text);margin-top:8px}
+.log-promise.done{background:var(--green-bg);color:var(--green-text)}
+
+/* profile modal */
+.profile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;overflow-y:auto}
+.profile-overlay.open{display:flex;align-items:flex-start;justify-content:center;padding:20px}
+.profile-modal{background:var(--bg);border-radius:var(--radius-lg);width:100%;max-width:680px;margin:auto}
+.profile-header{padding:20px 20px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:14px}
+.profile-body{padding:20px}
+.profile-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}
+.profile-close{margin-left:auto;background:transparent;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:4px 8px}
+.tab-inner{display:flex;gap:0;border-bottom:0.5px solid var(--border);margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.tab-inner::-webkit-scrollbar{display:none}
+.tab-inner-btn{padding:7px 14px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;background:transparent;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab-inner-btn.active{color:var(--text);font-weight:500;border-bottom-color:var(--green)}
+.inner-panel{display:none}.inner-panel.active{display:block}
+
+/* salary */
+.salary-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.salary-row:last-child{border-bottom:none}
+.salary-date{font-size:12px;color:var(--text3);width:80px}
+.salary-amount{font-size:15px;font-weight:600}
+.salary-change{font-size:11px;padding:2px 7px;border-radius:20px}
+.sc-up{background:var(--green-bg);color:var(--green-text)}
+.sc-same{background:var(--bg2);color:var(--text2)}
+
+/* exit */
+.exit-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg3);color:var(--text2);margin:2px}
+
+/* empty */
+.empty{text-align:center;padding:28px;color:var(--text3);font-size:13px}
+.hint{font-size:11px;color:var(--text3);margin-top:6px}
+
+@media(max-width:600px){
+  .two-col{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .branch-grid{grid-template-columns:1fr !important}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo-row">
+      <span class="logo-name">어썸잉글리쉬</span>
+      <span class="logo-sub">강사 관리 시스템</span>
+    </div>
+    <div class="nav-tabs">
+      <div class="nav-tab active" onclick="go('dashboard')">📊 대시보드</div>
+      <div class="nav-tab" onclick="go('teachers')">👥 강사</div>
+      <div class="nav-tab" onclick="go('records')">💬 기록 <span class="tab-badge" id="promise-badge" style="display:none"></span></div>
+      <div class="nav-tab" onclick="go('more')">⚙️ 더보기 <span class="tab-badge" id="more-badge" style="display:none"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══ DASHBOARD ══ -->
+<div id="page-dashboard" class="page active">
+  <div class="page-title">대시보드</div>
+  <div class="page-sub" id="today-date"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="metric"><div class="metric-label">재직 강사</div><div class="metric-val" id="m-total">0</div></div>
+    <div class="metric"><div class="metric-label">Potential</div><div class="metric-val mv-purple" id="m-potential">0</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="metric"><div class="metric-label">미이행 약속</div><div class="metric-val mv-warn" id="m-promise">0</div></div>
+    <div class="metric"><div class="metric-label">이탈 위험</div><div class="metric-val mv-danger" id="m-danger">0</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="metric"><div class="metric-label">공릉 총급여</div><div class="metric-val" style="font-size:18px" id="m-sal-1">-</div></div>
+    <div class="metric"><div class="metric-label">중계 총급여</div><div class="metric-val" style="font-size:18px" id="m-sal-2">-</div></div>
+  </div>
+  <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;">
+    <div style="font-size:12px;color:#92400e;font-weight:600;margin-bottom:10px;">💼 예상 퇴직금 합계 <span style="font-weight:400;font-size:11px;">(오늘 기준)</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <div style="background:#fff8e1;border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:11px;color:#a16207;font-weight:600;margin-bottom:4px;">공릉</div>
+        <div style="font-size:18px;font-weight:800;color:#78350f;" id="m-sv-1">-</div>
+        <div style="font-size:10px;color:#a16207;margin-top:2px;" id="m-sv-1-cnt">— 명</div>
+      </div>
+      <div style="background:#fff8e1;border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:11px;color:#a16207;font-weight:600;margin-bottom:4px;">중계</div>
+        <div style="font-size:18px;font-weight:800;color:#78350f;" id="m-sv-2">-</div>
+        <div style="font-size:10px;color:#a16207;margin-top:2px;" id="m-sv-2-cnt">— 명</div>
+      </div>
+      <div style="background:#fde68a;border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px;">전체</div>
+        <div style="font-size:18px;font-weight:800;color:#78350f;" id="m-sv-total">-</div>
+        <div style="font-size:10px;color:#a16207;margin-top:2px;" id="m-sv-detail">— 명</div>
+      </div>
+    </div>
+  </div>
+  <div id="urgent-banner"></div>
+  <div id="promise-banner"></div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">재직 강사 상태</div><div id="dash-teacher-list"></div></div>
+    <div class="card"><div class="card-title">위험 지표</div><div id="risk-bars"></div></div>
+  </div>
+  <div class="two-col">
+    <div class="card"><div class="card-title" style="color:var(--amber-text)">📋 다가오는 계약 만료</div><div id="dash-contract-list"></div></div>
+    <div class="card"><div class="card-title" style="color:var(--pink-text, #993556)">🎂 다가오는 생일</div><div id="dash-birthday-list"></div></div>
+  </div>
+  <div class="card" id="potential-section">
+    <div class="card-title" style="color:var(--purple-text)">⭐ Potential 강사</div>
+    <div id="dash-potential-list"></div>
+  </div>
+</div>
+
+<!-- ══ TEACHERS ══ -->
+<div id="page-teachers" class="page">
+  <div class="page-title">강사 목록</div>
+  <div class="page-sub">강사 이름을 클릭하면 상세 프로필 (면담·성장·급여 히스토리)을 볼 수 있습니다</div>
+  <div class="card" style="padding:0">
+    <button onclick="toggleAddForm()" id="add-form-toggle"
+      style="width:100%;padding:14px 18px;background:transparent;border:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;color:var(--text)">
+      <span>➕ 새 강사 추가</span>
+      <span id="add-form-chevron" style="color:var(--text3);font-size:14px;transition:transform .2s">▼</span>
+    </button>
+    <div id="add-form-body" style="display:none;padding:0 18px 18px;border-top:0.5px solid var(--border)">
+      <div class="form-grid" style="padding-top:14px">
+        <div class="g2">
+          <div class="field"><label>이름</label><input type="text" id="t-name" placeholder="예: 김민지"></div>
+          <div class="field"><label>지점</label><select id="t-branch" onchange="onBranchChange(this.value)"><option value="공릉">1호점 (공릉)</option><option value="중계">2호점 (중계)</option><option value="potential">Potential</option></select></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>직급</label><select id="t-position" style="width:100%"><option value="">선택 안 함</option></select></div>
+          <div class="field" id="field-position-hint" style="display:flex;align-items:flex-end"><span style="font-size:11px;color:var(--text3)">설정 탭에서 직급 목록 수정 가능</span></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label id="label-start">입사일</label><input type="date" id="t-start"></div>
+          <div class="field" id="field-end"><label>계약 만료일</label><input type="date" id="t-end"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>생년월일</label><input type="date" id="t-birth"></div>
+          <div class="field"><label>연락처</label><input type="text" id="t-phone" placeholder="010-0000-0000"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label id="label-salary">초봉 (만원)</label><input type="number" id="t-salary" placeholder="220"></div>
+          <div class="field"><label>메모</label><input type="text" id="t-memo" placeholder="특이사항"></div>
+        </div>
+        <button class="btn btn-green" onclick="addTeacher()">강사 추가</button>
+      </div>
+    </div>
+  </div>
+  <div class="branch-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title" style="color:var(--green-text)">📍 1호점 공릉</div>
+      <div id="list-gongreung"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title" style="color:var(--blue-text)">📍 2호점 중계</div>
+      <div id="list-joonggye"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple-text)">⭐ Potential 강사</div>
+    <div id="list-potential"></div>
+  </div>
+</div>
+
+<!-- ══ INTERVIEW ══ -->
+<div id="page-interview" class="page">
+  <div class="page-title">면담 기록</div>
+  <div class="page-sub">면담 내용, 원장 약속, 이행 여부를 추적합니다</div>
+  <div class="card">
+    <div class="card-title">새 면담 기록</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>강사 선택</label><select id="iv-teacher"><option value="">— 선택 —</option></select></div>
+        <div class="field"><label>면담 유형</label>
+          <select id="iv-type">
+            <option>정기 면담</option><option>재계약 면담</option><option>고충 면담</option>
+            <option>칭찬·격려</option><option>경고·주의</option><option>수시 면담</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>강사가 한 말 (핵심 요약)</label><textarea id="iv-said" placeholder="강사가 털어놓은 고민, 요청, 불만 등을 기록"></textarea></div>
+      <div class="field"><label>원장 피드백 / 결정 사항</label><textarea id="iv-feedback" placeholder="원장이 한 말, 결정, 지시 사항"></textarea></div>
+      <div class="field"><label>원장이 약속한 것 (이행 추적용)</label><textarea id="iv-promise" placeholder="예: 다음 달부터 스케줄 조정, 수업 자료 추가 지원 등&#10;비워두면 약속 없음으로 처리됩니다"></textarea></div>
+      <div class="field"><label>면담 날짜</label><input type="date" id="iv-date"></div>
+      <button class="btn btn-green" onclick="saveInterview()">면담 기록 저장</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">전체 면담 히스토리</div>
+    <div style="margin-bottom:12px">
+      <select id="iv-filter" onchange="renderInterviewLog()" style="width:auto;padding:6px 10px;font-size:13px">
+        <option value="">전체 강사</option>
+      </select>
+    </div>
+    <div id="interview-log"></div>
+  </div>
+</div>
+
+<!-- ══ CHECKIN ══ -->
+<div id="page-checkin" class="page">
+  <div class="page-title">체크인 기록</div>
+  <div class="page-sub">정기 만족도 체크인을 기록합니다 (면담과 별도)</div>
+  <div class="notice">권장 시점: 입사 1개월 · 3개월 · 6개월 · 9개월 · 12개월</div>
+  <div class="card">
+    <div class="card-title">새 체크인</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>강사</label><select id="ci-teacher"><option value="">— 선택 —</option></select></div>
+        <div class="field"><label>시점</label>
+          <select id="ci-stage">
+            <option>1개월</option><option>3개월</option><option>6개월</option>
+            <option>9개월</option><option>12개월</option><option>수시</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>수업 만족도</label>
+        <input type="range" min="1" max="10" value="7" id="ci-score" step="1" oninput="document.getElementById('ci-score-out').textContent=this.value+' / 10'">
+        <div class="score-box" id="ci-score-out">7 / 10</div>
+      </div>
+      <div class="field"><label>힘들었던 점</label><textarea id="ci-hard" placeholder="이번 달 가장 힘들었던 수업 장면"></textarea></div>
+      <div class="field"><label>필요한 지원</label><textarea id="ci-need" placeholder="원장에게 바라는 점"></textarea></div>
+      <div class="field"><label>이탈 신호</label>
+        <select id="ci-signal">
+          <option value="none">없음</option><option value="burnout">번아웃 징후</option>
+          <option value="communication">소통 회피</option><option value="personal">개인사정 변화</option>
+          <option value="overload">수업 부담 호소</option><option value="jobhunt">타 직장 언급</option>
+        </select>
+      </div>
+      <button class="btn btn-green" onclick="saveCheckin()">저장</button>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">체크인 히스토리</div><div id="checkin-log"></div></div>
+</div>
+
+<!-- ══ CONTRACT ══ -->
+<div id="page-contract" class="page">
+  <div class="page-title">계약 일정</div>
+  <div class="page-sub">재계약 일정 관리</div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">이달 만료</div><div class="metric-val mv-danger" id="c-thismonth">0</div></div>
+    <div class="metric"><div class="metric-label">90일 내 만료</div><div class="metric-val mv-warn" id="c-90days">0</div></div>
+    <div class="metric"><div class="metric-label">만료됨</div><div class="metric-val" id="c-done">0</div></div>
+  </div>
+  <div class="card"><div class="card-title">타임라인</div><div id="contract-timeline"></div></div>
+  <div class="card">
+    <div class="card-title">재계약 체크리스트</div>
+    <div class="toggle-row"><div><div class="toggle-label">D-90 체크인 면담 완료</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div><div class="toggle-label">급여 인상안 준비</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div><div class="toggle-label">역할 확대 제안 준비</div><div class="toggle-sub">멘토, 특강 기획 등</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div><div class="toggle-label">계약서 초안 작성</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div><div class="toggle-label">면담 일정 확정</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+  </div>
+</div>
+
+<!-- ══ SIGNALS ══ -->
+<div id="page-signals" class="page">
+  <div class="page-title">이탈 신호</div>
+  <div class="page-sub">신호 2개 이상 시 즉시 면담</div>
+  <div id="signal-alerts"></div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red-text)">🔴 고위험</div>
+    <div class="signal-item"><div class="sig-dot sd-red">!</div><div><div class="sig-title">체크인 2회 이상 무응답</div><div class="sig-desc">소통 단절 · 비공식 대화로 먼저 접근</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-red">!</div><div><div class="sig-title">연차·조퇴 갑작스러운 급증</div><div class="sig-desc">입사 3개월 이내 특히 주의</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-red">!</div><div><div class="sig-title">"요즘 힘들어요" 반복</div><div class="sig-desc">번아웃 전 신호 · 업무량 즉시 검토</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-red">!</div><div><div class="sig-title">이직·타 직장 언급</div><div class="sig-desc">처우 개선 논의 즉시 시작</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--amber-text)">🟡 중위험</div>
+    <div class="signal-item"><div class="sig-dot sd-amber">~</div><div><div class="sig-title">수업 만족도 5 이하 연속 2회</div><div class="sig-desc">반 배정 조정 또는 수업 자료 지원</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-amber">~</div><div><div class="sig-title">동료와 대화 급격히 줄어듦</div><div class="sig-desc">고립 신호 · 팀 관계 점검</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-amber">~</div><div><div class="sig-title">원장 약속 미이행 누적</div><div class="sig-desc">신뢰 손상 · 빠른 이행 또는 재협의 필요</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-text)">🟢 건강 신호</div>
+    <div class="signal-item"><div class="sig-dot sd-green">✓</div><div><div class="sig-title">수업 아이디어 자발 공유</div><div class="sig-desc">기획 참여 기회로 성취감 강화</div></div></div>
+    <div class="signal-item"><div class="sig-dot sd-green">✓</div><div><div class="sig-title">면담에서 솔직하게 말함</div><div class="sig-desc">신뢰 형성 · 적극 소통 유지</div></div></div>
+  </div>
+</div>
+
+<!-- ══ BIRTHDAY ══ -->
+<div id="page-birthday" class="page">
+  <div class="page-title">생일 관리</div>
+  <div class="page-sub">강사 생일을 챙겨주세요</div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">이번 달</div><div class="metric-val mv-safe" id="bd-thismonth">0</div></div>
+    <div class="metric"><div class="metric-label">7일 내</div><div class="metric-val mv-warn" id="bd-soon">0</div></div>
+    <div class="metric"><div class="metric-label">오늘</div><div class="metric-val mv-danger" id="bd-today">0</div></div>
+  </div>
+  <div id="bd-today-banner"></div>
+  <div class="card"><div class="card-title">이번 달 생일</div><div id="bd-month-list"></div></div>
+  <div class="card"><div class="card-title">전체 (D-day 순)</div><div id="bd-all-list"></div></div>
+  <div class="card">
+    <div class="card-title">축하 메모 기록</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>강사</label><select id="bd-teacher"><option value="">— 선택 —</option></select></div>
+        <div class="field"><label>연도</label><input type="text" id="bd-year" placeholder="2025"></div>
+      </div>
+      <div class="field"><label>축하 메모 / 선물 기록</label><textarea id="bd-memo" placeholder="예: 케이크 + 기프티콘 전달"></textarea></div>
+      <button class="btn btn-green" onclick="saveBdMemo()">저장</button>
+    </div>
+    <div style="margin-top:14px" id="bd-memo-log"></div>
+  </div>
+</div>
+
+<!-- ══ LEAVE ══ -->
+<div id="page-leave" class="page">
+  <div class="page-title">연차 관리</div>
+  <div class="page-sub">강사별 연차 현황</div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">총 강사</div><div class="metric-val" id="lv-total">0</div></div>
+    <div class="metric"><div class="metric-label">잔여 0일</div><div class="metric-val mv-danger" id="lv-zero">0</div></div>
+    <div class="metric"><div class="metric-label">이달 사용</div><div class="metric-val mv-warn" id="lv-thismonth">0</div></div>
+  </div>
+  <div class="card"><div class="card-title">강사별 현황</div><div id="lv-list"></div></div>
+  <div class="card">
+    <div class="card-title">연차 사용 기록</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>강사</label><select id="lv-teacher"><option value="">— 선택 —</option></select></div>
+        <div class="field"><label>일수</label>
+          <select id="lv-days"><option value="0.5">반차</option><option value="1" selected>1일</option><option value="2">2일</option><option value="3">3일</option><option value="5">5일</option></select>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="field"><label>날짜</label><input type="date" id="lv-date"></div>
+        <div class="field"><label>사유</label><select id="lv-reason"><option>개인 사정</option><option>병가</option><option>경조사</option><option>여행</option><option>기타</option></select></div>
+        <div class="field"><label>급여 차감</label><select id="lv-deduct"><option value="no">차감 없음</option><option value="yes">차감함</option></select></div>
+      </div>
+      <div class="field"><label>메모</label><textarea id="lv-memo" placeholder="추가 메모"></textarea></div>
+      <button class="btn btn-green" onclick="saveLeave()">기록</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0">
+    <button onclick="toggleQuotaSection()" style="width:100%;padding:14px 18px;background:transparent;border:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase">
+      <span>총량 설정</span>
+      <span id="quota-chevron" style="color:var(--text3);font-size:14px;transition:transform .2s">▼</span>
+    </button>
+    <div id="quota-body" style="display:none;padding:0 18px 18px;border-top:0.5px solid var(--border)">
+      <div class="notice" style="margin-top:12px">근로기준법: 1년 미만 월 1일 / 1년 이상 15일</div>
+      <div id="lv-quota-list"></div>
+    </div>
+  </div>
+  <div class="card" style="padding:0">
+    <button onclick="toggleHistorySection()" style="width:100%;padding:14px 18px;background:transparent;border:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase">
+      <span>사용 히스토리</span>
+      <span id="history-chevron" style="color:var(--text3);font-size:14px;transition:transform .2s">▼</span>
+    </button>
+    <div id="history-body" style="display:none;padding:0 18px 18px;border-top:0.5px solid var(--border)">
+      <div id="lv-history" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RETENTION ══ -->
+<div id="page-retention" class="page">
+  <div class="page-title">재등록률 기록</div>
+  <div class="page-sub">매달 강사별 재등록률을 기록하고 변화를 추적합니다</div>
+
+  <div class="card">
+    <div class="card-title">이번 달 등록률 기록</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>기록 월</label><input type="month" id="rt-month"></div>
+        <div class="field"><label>강사 선택</label><select id="rt-teacher"><option value="">— 선택 —</option></select></div>
+      </div>
+      <div class="field">
+        <label>재등록률 (%)</label>
+        <input type="range" min="0" max="100" value="80" id="rt-rate" step="1" oninput="document.getElementById('rt-rate-out').textContent=this.value+' %'">
+        <div class="score-box" id="rt-rate-out">80 %</div>
+      </div>
+      <div class="field"><label>메모 (선택)</label><textarea id="rt-memo" placeholder="예: 특정 반 상담 영향, 이탈 사유 등"></textarea></div>
+      <button class="btn btn-green" onclick="saveRetention()">등록률 저장</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">월별 평균 등록률</div>
+    <div id="retention-monthly"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">강사별 히스토리</div>
+    <div style="margin-bottom:12px">
+      <select id="rt-filter" onchange="renderRetention()" style="width:auto;padding:6px 10px;font-size:13px">
+        <option value="">전체 강사</option>
+      </select>
+    </div>
+    <div id="retention-log"></div>
+  </div>
+</div>
+
+<!-- ══ EXITED ══ -->
+<div id="page-exited" class="page">
+  <div class="page-title">퇴사자 관리</div>
+  <div class="page-sub">퇴사 기록을 남기고 패턴을 분석합니다</div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">총 퇴사자</div><div class="metric-val mv-purple" id="ex-total">0</div></div>
+    <div class="metric"><div class="metric-label">평균 근속</div><div class="metric-val" id="ex-avg">-</div></div>
+    <div class="metric"><div class="metric-label">주 퇴사 사유</div><div class="metric-val" style="font-size:14px" id="ex-topreason">-</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">퇴사 처리</div>
+    <div class="form-grid">
+      <div class="g2">
+        <div class="field"><label>강사 선택 (재직자)</label><select id="ex-teacher"><option value="">— 선택 —</option></select></div>
+        <div class="field"><label>퇴사일</label><input type="date" id="ex-date"></div>
+      </div>
+      <div class="field"><label>퇴사 사유</label>
+        <select id="ex-reason">
+          <option>번아웃 / 체력 한계</option><option>수업 부담</option><option>개인 사정</option>
+          <option>타 직장 이직</option><option>계약 만료 후 미갱신</option><option>학업 복귀</option>
+          <option>결혼 / 육아</option><option>이사 / 거리 문제</option><option>급여 불만</option><option>기타</option>
+        </select>
+      </div>
+      <div class="field"><label>마지막 면담 요약</label><textarea id="ex-last" placeholder="퇴사 전 마지막 면담에서 들은 솔직한 이야기"></textarea></div>
+      <div class="field"><label>원장 회고 (내부 메모)</label><textarea id="ex-retro" placeholder="돌이켜보면 어떤 신호가 있었는지, 무엇을 더 했어야 했는지"></textarea></div>
+      <div class="field"><label>재고용 가능성</label>
+        <select id="ex-rehire"><option value="yes">가능</option><option value="maybe">경우에 따라</option><option value="no">불가</option></select>
+      </div>
+      <button class="btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="processExit()">퇴사 처리</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">퇴사자 패턴 분석</div>
+    <div id="ex-pattern"></div>
+  </div>
+  <div class="card"><div class="card-title">퇴사자 목록</div><div id="ex-list"></div></div>
+</div>
+
+<!-- ══ ONBOARDING ══ -->
+<div id="page-onboarding" class="page">
+  <div class="page-title">온보딩 체크리스트</div>
+  <div class="page-sub">신규 강사 정착 단계별 관리</div>
+  <div class="card">
+    <div class="card-title">첫째 주 (Day 1–7)</div>
+    <div class="toggle-row"><div class="toggle-label">학원 시스템·규정 안내</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">수업 자료 공유 DB 접근 권한</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">담당 반 배정 및 학생 파악</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">동료 강사 소개 및 점심 자리</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">첫날 수업 후 피드백 대화</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">첫째 달 (Week 2–4)</div>
+    <div class="toggle-row"><div><div class="toggle-label">수업량 적게 시작</div><div class="toggle-sub">과부하 없이 적응 기간 확보</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">공유 자료 활용 여부 확인</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div><div class="toggle-label">2주차 비공식 체크인</div><div class="toggle-sub">"힘든 점 있어요?" 가볍게</div></div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">학부모 상담 첫 경험 후 피드백</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">1개월 공식 체크인</div>
+    <div class="toggle-row"><div class="toggle-label">1개월 체크인 진행</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">수업량 조정 협의</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+    <div class="toggle-row"><div class="toggle-label">3개월 체크인 일정 예고</div><button class="toggle-btn off" onclick="toggleBtn(this)"></button></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div id="page-settings" class="page">
+  <div class="page-title">설정</div>
+  <div class="page-sub">학원 정보 및 데이터 관리</div>
+  <div class="card">
+    <div class="card-title">학원 정보</div>
+    <div class="form-grid">
+      <div class="field"><label>학원명</label><input type="text" id="s-name" value="어썸잉글리쉬"></div>
+      <div class="g2">
+        <div class="field"><label>1호점</label><input type="text" id="s-b1" value="1호점"></div>
+        <div class="field"><label>2호점</label><input type="text" id="s-b2" value="2호점"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">저장</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">직급 관리</div>
+    <div id="position-list" style="margin-bottom:12px"></div>
+    <div class="g2" style="margin-bottom:8px">
+      <input type="text" id="new-position" placeholder="새 직급 입력 (예: 주임강사)">
+      <button class="btn btn-green" onclick="addPosition()">추가</button>
+    </div>
+    <div class="hint">강사 추가 시 직급 드롭다운에 반영됩니다</div>
+  </div>
+  <div class="card">
+    <div class="card-title">데이터 관리</div>
+    <div class="btn-row">
+      <button class="btn" onclick="exportData()">내보내기 (JSON)</button>
+      <button class="btn" onclick="clearData()" style="color:var(--red-text);border-color:var(--red)">전체 초기화</button>
+    </div>
+    <div class="hint" style="margin-top:10px">데이터는 이 브라우저에 저장됩니다</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ══ PROFILE MODAL ══ -->
+<div class="profile-overlay" id="profile-overlay" onclick="closeProfile(event)">
+  <div class="profile-modal" id="profile-modal">
+    <div class="profile-header">
+      <div class="profile-av" id="p-av"></div>
+      <div>
+        <div style="font-size:17px;font-weight:600" id="p-name"></div>
+        <div style="font-size:12px;color:var(--text2)" id="p-meta"></div>
+      </div>
+      <button class="profile-close" onclick="document.getElementById('profile-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="profile-body">
+      <!-- potential 전용 뷰 -->
+      <div id="potential-panel" style="display:none">
+        <div class="form-grid" id="potential-view-fields">
+          <div class="g2">
+            <div class="field"><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">입사 가능일</label><div id="pv-start" style="font-size:14px;font-weight:500;padding:4px 0"></div></div>
+            <div class="field"><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">희망 초봉</label><div id="pv-salary" style="font-size:14px;font-weight:500;padding:4px 0"></div></div>
+          </div>
+          <div class="g2">
+            <div class="field"><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">생년월일</label><div id="pv-birth" style="font-size:14px;font-weight:500;padding:4px 0"></div></div>
+            <div class="field"><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">연락처</label><div id="pv-phone" style="font-size:14px;font-weight:500;padding:4px 0"></div></div>
+          </div>
+          <div class="field"><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">메모</label><div id="pv-memo" style="font-size:14px;padding:4px 0;color:var(--text2)"></div></div>
+          <button class="btn" style="width:auto" onclick="showPotentialEdit()">✏️ 수정</button>
+        </div>
+        <!-- 수정 폼 -->
+        <div id="potential-edit-fields" style="display:none" class="form-grid">
+          <div class="g2">
+            <div class="field"><label>입사 가능일</label><input type="date" id="pe-start"></div>
+            <div class="field"><label>희망 초봉 (만원)</label><input type="number" id="pe-salary" placeholder="220"></div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>생년월일</label><input type="date" id="pe-birth"></div>
+            <div class="field"><label>연락처</label><input type="text" id="pe-phone" placeholder="010-0000-0000"></div>
+          </div>
+          <div class="field"><label>메모</label><textarea id="pe-memo" placeholder="특이사항, 면담 인상, 장단점 등"></textarea></div>
+          <div class="g2">
+            <button class="btn btn-green" onclick="savePotentialEdit()">저장</button>
+            <button class="btn" onclick="cancelPotentialEdit()">취소</button>
+          </div>
+        </div>
+      </div>
+      <!-- 일반 강사 탭 -->
+      <div id="normal-panel">
+      <div class="tab-inner">
+        <button class="tab-inner-btn active" onclick="switchInner('info',this)">👤 기본 정보</button>
+        <button class="tab-inner-btn" onclick="switchInner('salary',this)">💰 급여 히스토리</button>
+        <button class="tab-inner-btn" onclick="switchInner('growth',this)">📈 성장 기록</button>
+        <button class="tab-inner-btn" onclick="switchInner('interviews',this)">💬 면담 히스토리</button>
+        <button class="tab-inner-btn" onclick="switchInner('retention',this)">📊 등록률</button>
+      </div>
+      <div id="inner-info" class="inner-panel active"></div>
+      <div id="inner-growth" class="inner-panel"></div>
+      <div id="inner-interviews" class="inner-panel"></div>
+      <div id="inner-salary" class="inner-panel"></div>
+      <div id="inner-retention" class="inner-panel"></div>
+      <!-- salary add form -->
+      <div id="salary-add-form" style="display:none;margin-top:16px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">급여 변경 기록 추가</div>
+          <div class="form-grid">
+            <div class="g2">
+              <div class="field"><label>변경 후 금액 (만원)</label><input type="number" id="sal-amount" placeholder="240"></div>
+              <div class="field"><label>적용 시점</label><input type="date" id="sal-date"></div>
+            </div>
+            <div class="g2">
+              <div class="field"><label>급여 유형</label><select id="sal-pay-type"><option value="월급">월급</option><option value="시급">시급</option></select></div>
+              <div class="field"><label>보험 유형</label><select id="sal-ins-type"><option value="4대보험">4대보험</option><option value="3.3%">3.3%</option></select></div>
+            </div>
+            <div class="field"><label>사유</label><input type="text" id="sal-reason" placeholder="예: 1차 재계약 인상, 성과 인상 등"></div>
+            <button class="btn btn-green" onclick="saveSalary()">저장</button>
+          </div>
+        </div>
+      </div>
+      <!-- growth add form -->
+      <div id="growth-add-form" style="display:none;margin-top:16px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">성장 기록 추가</div>
+          <div class="form-grid">
+            <div class="field"><label>내용</label><input type="text" id="gr-content" placeholder="예: 고급반 담당 시작, 학부모 상담 독립, 신규 강사 멘토 역할"></div>
+            <div class="field"><label>유형</label>
+              <select id="gr-type">
+                <option value="role">역할 확대</option><option value="praise">칭찬·인정</option>
+                <option value="skill">역량 성장</option><option value="milestone">마일스톤</option>
+              </select>
+            </div>
+            <div class="field"><label>날짜</label><input type="date" id="gr-date"></div>
+            <button class="btn btn-green" onclick="saveGrowth()">저장</button>
+          </div>
+        </div>
+      </div><!-- /normal-panel -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ SUPABASE CONFIG ══
+const SUPABASE_URL = 'https://rgwezytznkbvwgmfsgex.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Tzf67XsbBTTSENHWrJnyZw_YmXmORhH';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══ DATA (in-memory cache) ══
+let data = {teachers:[], exited:[], interviews:[], checkins:[],
+  salaryHistory:{}, growthHistory:{}, bdMemos:[], leaves:[],
+  leaveQuota:{}, positions:['부장','팀장','풀타임강사','파트타임강사','풀타임사무','파트타임사무']};
+
+// ══ DB helpers ══
+// snake_case <-> camelCase 변환
+function teacherFromDB(r){return {id:r.id, name:r.name, branch:r.branch, position:r.position,
+  start:r.start_date, end:r.end_date, birth:r.birth, phone:r.phone, memo:r.memo,
+  status:r.status||'safe', salary:r.salary||0, baseSalary:r.base_salary||0,
+  currentSalary:r.current_salary||0, sort_order:r.sort_order||0,
+  severanceStart:r.severance_start||null};}
+function teacherToDB(t){return {name:t.name, branch:t.branch, position:t.position||null,
+  start_date:t.start||null, end_date:t.end||null, birth:t.birth||null, phone:t.phone||null,
+  memo:t.memo||null, status:t.status||'safe', salary:t.salary||0,
+  base_salary:t.baseSalary||0, current_salary:t.currentSalary||0, sort_order:t.sort_order||0,
+  severance_start:t.severanceStart||null};}
+
+async function loadAll(){
+  try{
+    const [ts, ex, iv, ci, sh, gh, lv, lq, bm, st, rt] = await Promise.all([
+      sb.from('teachers').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true}),
+      sb.from('exited_teachers').select('*').order('exit_date',{ascending:false}),
+      sb.from('interviews').select('*').order('id',{ascending:true}),
+      sb.from('checkins').select('*').order('id',{ascending:true}),
+      sb.from('salary_history').select('*').order('change_date',{ascending:true}),
+      sb.from('growth_history').select('*').order('record_date',{ascending:true}),
+      sb.from('leaves').select('*').order('leave_date',{ascending:false}),
+      sb.from('leave_quotas').select('*'),
+      sb.from('birthday_memos').select('*').order('id',{ascending:false}),
+      sb.from('settings').select('*'),
+      sb.from('retention_rates').select('*').order('record_month',{ascending:false}),
+    ]);
+    data.teachers = (ts.data||[]).map(teacherFromDB);
+    data.exited   = (ex.data||[]).map(r=>({id:r.id, name:r.name, branch:r.branch, position:r.position,
+      start:r.start_date, end:r.end_date, exitDate:r.exit_date, months:r.months||0,
+      reason:r.reason, last:r.last_interview, retro:r.retro, rehire:r.rehire,
+      birth:r.birth, phone:r.phone, memo:r.memo, salary:r.salary, baseSalary:r.base_salary}));
+    data.interviews = (iv.data||[]).map(r=>({id:r.id, teacher:r.teacher_name, type:r.type,
+      said:r.said, feedback:r.feedback, promise:r.promise,
+      promiseDone:r.promise_done, date:r.interview_date}));
+    data.checkins = (ci.data||[]).map(r=>({id:r.id, teacher:r.teacher_name, stage:r.stage,
+      score:r.score, hard:r.hard, need:r.need, signal:r.signal, date:r.checkin_date}));
+    data.salaryHistory = {};
+    (sh.data||[]).forEach(r=>{
+      if(!data.salaryHistory[r.teacher_name]) data.salaryHistory[r.teacher_name]=[];
+      data.salaryHistory[r.teacher_name].push({id:r.id, amount:r.amount, date:r.change_date, reason:r.reason});
+    });
+    data.growthHistory = {};
+    (gh.data||[]).forEach(r=>{
+      if(!data.growthHistory[r.teacher_name]) data.growthHistory[r.teacher_name]=[];
+      data.growthHistory[r.teacher_name].push({id:r.id, content:r.content, type:r.type, date:r.record_date});
+    });
+    data.leaves = (lv.data||[]).map(r=>({id:r.id, teacher:r.teacher_name, days:r.days,
+      date:r.leave_date, reason:r.reason, memo:r.memo, salaryDeducted:r.salary_deducted}));
+    data.leaveQuota = {};
+    (lq.data||[]).forEach(r=>{data.leaveQuota[r.teacher_name]=r.quota;});
+    data.bdMemos = (bm.data||[]).map(r=>({id:r.id, teacher:r.teacher_name, year:r.year,
+      memo:r.memo, date:new Date(r.created_at).toLocaleDateString('ko-KR')}));
+    const posRow = (st.data||[]).find(r=>r.key==='positions');
+    if(posRow && posRow.value) data.positions = posRow.value;
+    data.retentionRates = (rt.data||[]).map(r=>({id:r.id, teacher:r.teacher_name,
+      rate:parseFloat(r.rate), month:r.record_month, memo:r.memo,
+      created:r.created_at}));
+  } catch(e){
+    console.error('loadAll error', e);
+    alert('데이터 로딩 실패: '+e.message);
+  }
+}
+
+function save(){/* no-op — DB writes happen in individual actions */}
+
+let currentProfileTeacher=null;
+
+// ══ NAV ══
+// 그룹 구조: 각 그룹에 속한 페이지들
+const GROUPS = {
+  dashboard: ['dashboard'],
+  teachers:  ['teachers','exited','onboarding'],
+  records:   ['interview','checkin','leave','retention'],
+  more:      ['contract','signals','birthday','settings']
+};
+const GROUP_LABELS = {
+  teachers: [['teachers','👥 재직 강사'],['exited','📁 퇴사자'],['onboarding','🚀 온보딩']],
+  records:  [['interview','💬 면담'],['checkin','✅ 체크인'],['leave','📅 연차'],['retention','📈 등록률']],
+  more:     [['contract','📋 계약 일정'],['signals','⚠️ 이탈 신호 가이드'],['birthday','🎂 생일'],['settings','⚙️ 설정']]
+};
+const TOP_TABS = ['dashboard','teachers','records','more'];
+
+let currentGroup = 'dashboard';
+let currentSubPage = 'dashboard';
+
+function go(groupOrPageId){
+  // TOP_TABS 중 하나면 그룹 전환
+  if(TOP_TABS.includes(groupOrPageId)){
+    currentGroup = groupOrPageId;
+    // 그룹의 첫번째 페이지를 기본값으로
+    currentSubPage = GROUPS[groupOrPageId][0];
+  } else {
+    // 서브페이지 ID면 해당 그룹 찾아서 전환
+    for(const [g, pages] of Object.entries(GROUPS)){
+      if(pages.includes(groupOrPageId)){
+        currentGroup = g;
+        currentSubPage = groupOrPageId;
+        break;
+      }
+    }
+  }
+  // 상단 탭 active
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[TOP_TABS.indexOf(currentGroup)]?.classList.add('active');
+  // 페이지 전환
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+currentSubPage)?.classList.add('active');
+  // 서브탭 네비 렌더
+  renderSubNav();
+  render();
+  // 스크롤 맨 위로
+  window.scrollTo(0,0);
+}
+
+function renderSubNav(){
+  // 기존 서브탭 제거
+  document.querySelectorAll('.sub-nav').forEach(e=>e.remove());
+  const labels = GROUP_LABELS[currentGroup];
+  if(!labels) return;
+  // 현재 active 페이지 상단에 서브탭 삽입
+  const activePage = document.getElementById('page-'+currentSubPage);
+  if(!activePage) return;
+  const nav = document.createElement('div');
+  nav.className = 'sub-nav';
+  nav.style.cssText = 'display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px';
+  nav.innerHTML = labels.map(([id,label])=>{
+    const isActive = id===currentSubPage;
+    return `<button onclick="go('${id}')" class="sub-nav-btn" style="padding:7px 14px;border-radius:20px;font-size:13px;white-space:nowrap;border:0.5px solid ${isActive?'var(--text)':'var(--border2)'};background:${isActive?'var(--text)':'transparent'};color:${isActive?'var(--bg)':'var(--text2)'};cursor:pointer;font-family:inherit;flex-shrink:0">${label}</button>`;
+  }).join('');
+  // page-title 뒤에 삽입
+  const title = activePage.querySelector('.page-title');
+  if(title){
+    const sub = activePage.querySelector('.page-sub');
+    const anchor = sub || title;
+    anchor.insertAdjacentElement('afterend', nav);
+  } else {
+    activePage.insertBefore(nav, activePage.firstChild);
+  }
+}
+
+// ══ HELPERS ══
+function dU(d){const n=new Date();n.setHours(0,0,0,0);return Math.round((new Date(d)-n)/864e5)}
+function moIn(d){const s=new Date(d),n=new Date();return(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())}
+function ini(name){return name.substring(0,2)}
+function sc(t){if(t.branch==='potential')return'safe';if(t.status==='danger')return'danger';if(t.status==='warn')return'warn';if(t.end&&dU(t.end)<=30&&dU(t.end)>=0)return'warn';return'safe'}
+function workDays(startStr){if(!startStr)return 0;const s=new Date(startStr),n=new Date();return Math.max(0,Math.floor((n-s)/864e5));}
+function severanceStartDate(t){
+  // 직접 지정된 퇴직금 발생일이 있으면 그걸 사용, 없으면 입사일+1년
+  if(t.severanceStart) return t.severanceStart;
+  if(!t.start) return null;
+  const d=new Date(t.start);d.setFullYear(d.getFullYear()+1);
+  return d.toISOString().slice(0,10);
+}
+function calcSeverance(t){
+  const svDate=severanceStartDate(t);
+  if(!svDate) return 0;
+  const now=new Date();
+  if(new Date(svDate)>now) return 0; // 아직 발생 전
+  const days=workDays(svDate); // 퇴직금 발생일부터 오늘까지 계산
+  const sh=data.salaryHistory[t.name]||[];
+  const cur=sh.length?sh[sh.length-1].amount:(t.currentSalary||t.salary||0);
+  if(!cur)return 0;
+  return Math.round(cur*(days/365)*10)/10;
+}
+function isSeveranceActive(t){
+  const svDate=severanceStartDate(t);
+  if(!svDate)return false;
+  return new Date(svDate)<=new Date();
+}
+function scL(t){return{danger:'위험',warn:'주의',safe:'안정'}[sc(t)]}
+function bdD(b){if(!b)return 999;const n=new Date(),d=new Date(b),nx=new Date(n.getFullYear(),d.getMonth(),d.getDate());if(nx<n)nx.setFullYear(n.getFullYear()+1);return Math.round((nx-n)/864e5)}
+function bdAge(b){if(!b)return'-';const n=new Date(),d=new Date(b);let a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;return a}
+function getQ(n){return data.leaveQuota[n]||15}
+function getU(n){const y=new Date().getFullYear();return data.leaves.filter(l=>l.teacher===n&&new Date(l.date).getFullYear()===y).reduce((s,l)=>s+parseFloat(l.days),0)}
+function pendingPromises(){return data.interviews.filter(i=>i.promise&&i.promise.trim()&&!i.promiseDone).length}
+
+// ══ RENDER ══
+function render(){
+  renderDash();renderTeachers();renderInterviewLog();renderCheckin();renderContract();
+  renderSignals();renderBirthday();renderLeave();renderExited();renderRetention();populateSels();renderPositionList();
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+}
+
+function renderDash(){
+  const all=data.teachers;
+  const ts=all.filter(t=>t.branch!=='potential');
+  const potentials=all.filter(t=>t.branch==='potential');
+  document.getElementById('m-total').textContent=ts.length;
+  document.getElementById('m-danger').textContent=ts.filter(t=>sc(t)!=='safe').length;
+  const pp=pendingPromises();
+  document.getElementById('m-promise').textContent=pp;
+  document.getElementById('m-potential').textContent=potentials.length;
+  // 총급여 계산 (현재 급여 기준)
+  const salSum=(branch)=>ts.filter(t=>t.branch===branch).reduce((s,t)=>{
+    const sh=data.salaryHistory[t.name]||[];
+    const cur=sh.length?sh[sh.length-1].amount:(t.currentSalary||t.salary||0);
+    return s+cur;
+  },0);
+  const s1=salSum('공릉'),s2=salSum('중계');
+  document.getElementById('m-sal-1').textContent=s1?s1+'만원':'-';
+  document.getElementById('m-sal-2').textContent=s2?s2+'만원':'-';
+  // 퇴직금 합계
+  const svList=ts.filter(t=>t.branch!=='potential'&&isSeveranceActive(t));
+  const svBy=(branch)=>svList.filter(t=>t.branch===branch);
+  const svSum=(list)=>Math.round(list.reduce((s,t)=>s+calcSeverance(t),0)*10)/10;
+  const sv1=svBy('공릉'), sv2=svBy('중계');
+  const svTotal=Math.round(svSum(svList)*10)/10;
+  document.getElementById('m-sv-1').textContent=svSum(sv1)?svSum(sv1)+'만원':'-';
+  document.getElementById('m-sv-1-cnt').textContent=sv1.length+'명';
+  document.getElementById('m-sv-2').textContent=svSum(sv2)?svSum(sv2)+'만원':'-';
+  document.getElementById('m-sv-2-cnt').textContent=sv2.length+'명';
+  document.getElementById('m-sv-total').textContent=svTotal?svTotal+'만원':'-';
+  document.getElementById('m-sv-detail').textContent=svList.length+'명';
+  const urg=ts.filter(t=>sc(t)!=='safe');
+  document.getElementById('urgent-banner').innerHTML=urg.length
+    ?`<div class="danger-notice" style="margin-bottom:10px">⚠️ 주의 필요: ${urg.map(t=>t.name).join(', ')} — 빠른 면담 권장</div>`
+    :`<div class="success-notice" style="margin-bottom:10px">✅ 현재 모든 강사 상태 안정</div>`;
+  document.getElementById('promise-banner').innerHTML=pp
+    ?`<div class="warn-notice" style="margin-bottom:14px">📌 미이행 약속 ${pp}건 — 면담 기록에서 확인하세요</div>`:'';
+  // 재직 강사 목록 (potential 제외)
+  document.getElementById('dash-teacher-list').innerHTML=ts.length?ts.map(t=>`
+    <div class="t-row"><div class="av av-${sc(t)}" style="cursor:pointer" onclick="openProfile('${t.name}')">${ini(t.name)}</div>
+    <div class="ti"><div class="t-name" style="cursor:pointer" onclick="openProfile('${t.name}')">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}${t.position?' / '+t.position:''}</span></div>
+    <div class="t-sub">${t.start?'입사 '+moIn(t.start)+'개월':''} ${t.end&&t.branch!=='potential'?'· 만료 '+(dU(t.end)>0?'D-'+dU(t.end):'만료됨'):''}</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+      <span class="badge b-${sc(t)}">${scL(t)}</span>
+      ${isSeveranceActive(t)?`<span style="font-size:10px;background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:8px;font-weight:600;white-space:nowrap;">💼 퇴직금 발생</span>`:''}
+    </div></div>`).join(''):'<div class="empty">재직 강사 없음</div>';
+  // Potential 섹션
+  const psec=document.getElementById('potential-section');
+  const plist=document.getElementById('dash-potential-list');
+  if(potentials.length){
+    psec.style.display='';
+    plist.innerHTML=potentials.map(t=>`
+      <div class="t-row">
+        <div class="av" style="background:var(--purple-bg);color:var(--purple-text)">${ini(t.name)}</div>
+        <div class="ti">
+          <div class="t-name" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="openProfile('${t.name}')">${t.name}</div>
+          <div class="t-sub">${t.memo||'메모 없음'}${t.phone?' · '+t.phone:''}</div>
+        </div>
+        <span class="badge b-purple">Potential</span>
+      </div>`).join('');
+  } else {
+    psec.style.display='none';
+  }
+  const bc=data.checkins.filter(c=>c.signal==='burnout').length;
+  const cc=data.checkins.filter(c=>c.signal==='communication').length;
+  const ec=ts.filter(t=>dU(t.end)<=90&&dU(t.end)>=0).length;
+  const pc=pendingPromises();
+  const bar=(p,c)=>`<div class="risk-track"><div class="risk-fill ${c}" style="width:${Math.min(p,100)}%"></div></div>`;
+  document.getElementById('risk-bars').innerHTML=`
+    <div class="risk-row"><div class="risk-label">번아웃 위험</div>${bar(bc*20,'rf-amber')}<div class="risk-num">${Math.min(bc*2,10)}/10</div></div>
+    <div class="risk-row"><div class="risk-label">소통 단절</div>${bar(cc*25,'rf-red')}<div class="risk-num">${Math.min(cc*2.5,10)}/10</div></div>
+    <div class="risk-row"><div class="risk-label">계약 만료 임박</div>${bar(ec*20,'rf-amber')}<div class="risk-num">${Math.min(ec*2,10)}/10</div></div>
+    <div class="risk-row"><div class="risk-label">미이행 약속</div>${bar(pc*15,'rf-purple')}<div class="risk-num">${Math.min(pc,10)}/10</div></div>`;
+  const setB=(id,v)=>{const e=document.getElementById(id);if(!e)return;e.textContent=v;e.style.display=v?'':'none'};
+  const contractN = ts.filter(t=>dU(t.end)<=30&&dU(t.end)>=0).length;
+  const signalN = ts.filter(t=>sc(t)!=='safe').length;
+  const birthdayN = data.teachers.filter(t=>bdD(t.birth)<=7).length;
+  setB('contract-badge',contractN);
+  setB('signal-badge',signalN);
+  setB('birthday-badge',birthdayN);
+  setB('promise-badge',pp);
+  // 더보기 탭 종합 뱃지 (계약만료 + 이탈신호 + 생일)
+  setB('more-badge', contractN + signalN + birthdayN);
+
+  // 대시보드: 다가오는 계약 만료 (재직자 중 만료일 가장 빠른 순 5명)
+  const contractEl = document.getElementById('dash-contract-list');
+  if(contractEl){
+    const contractSorted = ts.filter(t=>t.end).sort((a,b)=>new Date(a.end)-new Date(b.end)).slice(0,5);
+    contractEl.innerHTML = contractSorted.length ? contractSorted.map(t=>{
+      const d=dU(t.end);
+      const cls = d<0?'b-ex':d<=30?'b-danger':d<=90?'b-warn':'b-info';
+      const label = d<0?'만료됨':d===0?'D-Day':d<=30?`D-${d} ⚡`:`D-${d}`;
+      return `<div class="t-row" style="padding:8px 0">
+        <div class="av av-${sc(t)}" style="width:30px;height:30px;font-size:11px">${ini(t.name)}</div>
+        <div class="ti">
+          <div class="t-name" style="font-size:13px;cursor:pointer" onclick="openProfile('${t.name}')">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}</span></div>
+          <div class="t-sub" style="font-size:11px">${t.end}</div>
+        </div>
+        <span class="badge ${cls}" style="font-size:10px">${label}</span>
+      </div>`;
+    }).join('') : '<div class="empty" style="padding:12px;font-size:12px">계약 만료 예정 없음</div>';
+  }
+
+  // 대시보드: 다가오는 생일 (가까운 순 5명)
+  const bdEl = document.getElementById('dash-birthday-list');
+  if(bdEl){
+    const withBirth = data.teachers.filter(t=>t.birth);
+    const bdSorted = [...withBirth].sort((a,b)=>bdD(a.birth)-bdD(b.birth)).slice(0,5);
+    bdEl.innerHTML = bdSorted.length ? bdSorted.map(t=>{
+      const d=bdD(t.birth), bd=new Date(t.birth);
+      const cls = d===0?'b-danger':d<=7?'b-warn':d<=30?'b-info':'b-safe';
+      const label = d===0?'오늘 🎂':`D-${d}`;
+      return `<div class="t-row" style="padding:8px 0">
+        <div class="av ${d===0?'av-danger':d<=7?'av-warn':'av-safe'}" style="width:30px;height:30px;font-size:11px">${ini(t.name)}</div>
+        <div class="ti">
+          <div class="t-name" style="font-size:13px;cursor:pointer" onclick="openProfile('${t.name}')">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}</span></div>
+          <div class="t-sub" style="font-size:11px">${bd.getMonth()+1}월 ${bd.getDate()}일 · 만 ${bdAge(t.birth)}세</div>
+        </div>
+        <span class="badge ${cls}" style="font-size:10px">${label}</span>
+      </div>`;
+    }).join('') : '<div class="empty" style="padding:12px;font-size:12px">생년월일 등록된 강사 없음</div>';
+  }
+}
+
+function tCard(t){
+  const ret=latestRetention(t.name);
+  const retBadge=ret?`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${ret.rate>=85?'var(--green-bg)':ret.rate>=70?'var(--amber-bg)':'var(--red-bg)'};color:${ret.rate>=85?'var(--green-text)':ret.rate>=70?'var(--amber-text)':'var(--red-text)'};white-space:nowrap">📈 ${ret.rate}%</span>`:'';
+  return `<div draggable="true" data-id="${t.id}"
+    ondragstart="dragStart(event)" ondragover="dragOver(event)"
+    ondrop="dragDrop(event)" ondragend="dragEnd(event)"
+    style="padding:10px 0;border-bottom:0.5px solid var(--border);cursor:default">
+    <!-- 상단: 아바타 + 이름/직급/상태 -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="color:var(--text3);font-size:14px;cursor:grab;flex-shrink:0">⠿</div>
+      <div class="av av-${sc(t)}" style="width:32px;height:32px;font-size:11px;cursor:pointer;flex-shrink:0" onclick="openProfile('${t.name}')">${ini(t.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="openProfile('${t.name}')">${t.name}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">${t.position||''}</div>
+      </div>
+      <span class="badge b-${sc(t)}" style="font-size:10px;flex-shrink:0">${t.branch==='potential'?'Potential':scL(t)}</span>
+    </div>
+    <!-- 중간: 등록률 + 부가정보 -->
+    ${(retBadge||t.start||t.currentSalary||t.salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
+      ${retBadge}
+      ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
+      ${(t.currentSalary||t.salary)?`<span>· ${(t.currentSalary||t.salary)}만</span>`:''}
+      ${t.birth?`<span>· 🎂${new Date(t.birth).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}</span>`:''}
+    </div>`:''}
+    ${t.memo?`<div style="margin:4px 0 0 44px;font-size:11px;color:var(--amber-text)">${t.memo}</div>`:''}
+    <!-- 하단: 버튼 -->
+    <div style="display:flex;gap:6px;margin:8px 0 0 44px">
+      <button class="btn btn-sm" style="padding:3px 10px;font-size:11px" onclick="openProfile('${t.name}')">상세</button>
+      <button class="btn btn-sm" style="padding:3px 10px;font-size:11px;color:var(--red-text);border-color:var(--red)" onclick="removeTeacher(${t.id})">삭제</button>
+    </div>
+  </div>`;
+}
+
+function renderTeachers(){
+  const gongreung = data.teachers.filter(t=>t.branch==='공릉');
+  const joonggye  = data.teachers.filter(t=>t.branch==='중계');
+  const potential = data.teachers.filter(t=>t.branch==='potential');
+
+  const el1=document.getElementById('list-gongreung');
+  const el2=document.getElementById('list-joonggye');
+  const el3=document.getElementById('list-potential');
+  if(!el1||!el2||!el3) return;
+
+  el1.innerHTML = gongreung.length ? gongreung.map(tCard).join('') : '<div class="empty" style="padding:16px;font-size:12px">강사 없음</div>';
+  el2.innerHTML = joonggye.length  ? joonggye.map(tCard).join('')  : '<div class="empty" style="padding:16px;font-size:12px">강사 없음</div>';
+  el3.innerHTML = potential.length ? potential.map(tCard).join('') : '<div class="empty" style="padding:16px;font-size:12px">등록된 Potential 강사 없음</div>';
+}
+
+let dragSrcId=null;
+function dragStart(e){dragSrcId=parseInt(e.currentTarget.dataset.id);e.currentTarget.style.opacity='0.4';e.dataTransfer.effectAllowed='move';}
+function dragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.style.background='var(--bg2)';}
+async function dragDrop(e){
+  e.preventDefault();
+  const targetId=parseInt(e.currentTarget.dataset.id);
+  if(dragSrcId===targetId)return;
+  const si=data.teachers.findIndex(t=>t.id===dragSrcId);
+  const ti=data.teachers.findIndex(t=>t.id===targetId);
+  const [moved]=data.teachers.splice(si,1);
+  data.teachers.splice(ti,0,moved);
+  renderTeachers();
+  // 모든 강사의 sort_order를 새 인덱스로 DB에 업데이트
+  const updates=data.teachers.map((t,i)=>sb.from('teachers').update({sort_order:i}).eq('id',t.id));
+  await Promise.all(updates);
+}
+function dragEnd(e){document.querySelectorAll('.t-row[data-id]').forEach(r=>{r.style.opacity='';r.style.background='';});}
+
+function onBranchChange(val){
+  const isPotential = val==='potential';
+  document.getElementById('label-start').textContent  = isPotential ? '입사 가능일' : '입사일';
+  document.getElementById('label-salary').textContent = isPotential ? '희망 초봉 (만원)' : '초봉 (만원)';
+  const fieldEnd = document.getElementById('field-end');
+  fieldEnd.style.display    = isPotential ? 'none' : '';
+  fieldEnd.style.visibility = isPotential ? 'hidden' : '';
+  if(isPotential) document.getElementById('t-end').value='';
+}
+
+let _teacherFilter='all';
+window._teacherFilter='all';
+function setFilter(f){
+  window._teacherFilter=f;
+  _teacherFilter=f;
+  ['all','공릉','중계','potential'].forEach(k=>{
+    const btn=document.getElementById('filter-'+k);
+    if(!btn)return;
+    btn.style.background=k===f?'var(--text)':'';
+    btn.style.color=k===f?'var(--bg)':'';
+    btn.style.borderColor=k==='potential'&&k!==f?'#7F77DD':k===f?'var(--text)':'';
+  });
+  renderTeachers();
+}
+
+
+function renderInterviewLog(){
+  const filter=document.getElementById('iv-filter')?.value||'';
+  const el=document.getElementById('interview-log');
+  let list=filter?data.interviews.filter(i=>i.teacher===filter):data.interviews;
+  if(!list.length){el.innerHTML='<div class="empty">면담 기록이 없습니다</div>';return}
+  const typeColor={정기:'b-info',재계약:'b-safe',고충:'b-warn',칭찬:'b-safe',경고:'b-danger',수시:'b-info'};
+  el.innerHTML=[...list].reverse().map((iv,ri)=>{
+    const realIdx=data.interviews.length-1-(filter?data.interviews.filter(i=>i.teacher===filter).length-1-ri:ri);
+    const c=Object.entries(typeColor).find(([k])=>iv.type&&iv.type.includes(k));
+    return `<div class="log-item">
+      <div class="log-header">
+        <div><strong>${iv.teacher}</strong> · <span class="badge ${c?c[1]:'b-info'}" style="font-size:11px">${iv.type}</span></div>
+        <span style="font-size:11px;color:var(--text3)">${iv.date}</span>
+      </div>
+      <div class="log-detail">
+        ${iv.said?`<div style="margin-bottom:4px">💬 <strong>강사 발언:</strong> ${iv.said}</div>`:''}
+        ${iv.feedback?`<div style="margin-bottom:4px">📝 <strong>원장 피드백:</strong> ${iv.feedback}</div>`:''}
+      </div>
+      ${iv.promise?`<div class="log-promise ${iv.promiseDone?'done':''}">
+        📌 약속: ${iv.promise}
+        ${iv.promiseDone
+          ?`<span style="margin-left:8px;font-weight:600">✅ 이행 완료</span>`
+          :`<button class="btn btn-sm" style="margin-left:8px;padding:3px 8px;font-size:11px;background:var(--green);color:#fff;border-color:var(--green)" onclick="markDone(${data.interviews.indexOf(iv)})">이행 완료</button>`}
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderCheckin(){
+  const el=document.getElementById('checkin-log');
+  if(!data.checkins.length){el.innerHTML='<div class="empty">체크인 기록이 없습니다</div>';return}
+  const sL={none:'없음',burnout:'번아웃',communication:'소통 회피',personal:'개인사정',overload:'수업 부담',jobhunt:'타 직장'};
+  const sB={none:'b-info',burnout:'b-warn',communication:'b-danger',personal:'b-warn',overload:'b-warn',jobhunt:'b-danger'};
+  el.innerHTML=[...data.checkins].reverse().map(c=>`
+    <div class="log-item">
+      <div class="log-header"><strong>${c.teacher}</strong> · ${c.stage}<span class="badge ${sB[c.signal]||'b-info'}">${sL[c.signal]||'없음'}</span></div>
+      <div class="log-detail">만족도 <strong>${c.score}/10</strong> · ${c.date}${c.hard?`<br>힘든 점: ${c.hard}`:''}${c.need?`<br>필요한 지원: ${c.need}`:''}</div>
+    </div>`).join('');
+}
+
+function renderContract(){
+  const ts=data.teachers,n=new Date();
+  document.getElementById('c-thismonth').textContent=ts.filter(t=>{const d=new Date(t.end);return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}).length;
+  document.getElementById('c-90days').textContent=ts.filter(t=>dU(t.end)<=90&&dU(t.end)>=0).length;
+  document.getElementById('c-done').textContent=ts.filter(t=>dU(t.end)<0).length;
+  document.getElementById('contract-timeline').innerHTML='<div class="tl">'+[...ts].sort((a,b)=>new Date(a.end)-new Date(b.end)).map(t=>{
+    const d=dU(t.end);
+    return `<div class="tl-item"><div class="tl-dot ${d<0?'done':d<=30?'now':''}"></div>
+      <div class="tl-date">${t.end} · ${d<0?'만료됨':d<=30?`D-${d} ⚡`:d<=90?`D-${d} 준비 필요`:`D-${d}`}</div>
+      <div class="tl-text">${t.name} (${t.branch})</div></div>`;
+  }).join('')+'</div>';
+}
+
+function renderSignals(){
+  const al=data.teachers.filter(t=>sc(t)!=='safe');
+  document.getElementById('signal-alerts').innerHTML=al.length
+    ?al.map(t=>`<div class="${sc(t)==='danger'?'danger-notice':'warn-notice'}" style="margin-bottom:10px">⚠️ <strong>${t.name}</strong>(${t.branch}) — ${t.memo||'상태 주의'} · 면담 권장</div>`).join('')
+    :'<div class="success-notice" style="margin-bottom:14px">현재 이탈 위험 신호 없음 ✅</div>';
+}
+
+function renderBirthday(){
+  const ts=data.teachers.filter(t=>t.birth),n=new Date();
+  const tm=ts.filter(t=>new Date(t.birth).getMonth()===n.getMonth());
+  const soon=ts.filter(t=>bdD(t.birth)<=7);
+  const today=ts.filter(t=>bdD(t.birth)===0);
+  document.getElementById('bd-thismonth').textContent=tm.length;
+  document.getElementById('bd-soon').textContent=soon.length;
+  document.getElementById('bd-today').textContent=today.length;
+  document.getElementById('bd-today-banner').innerHTML=today.length
+    ?`<div class="danger-notice" style="margin-bottom:14px">🎂 오늘 생일: ${today.map(t=>t.name).join(', ')}</div>`
+    :soon.length?`<div class="warn-notice" style="margin-bottom:14px">🎁 7일 내: ${soon.map(t=>`${t.name}(D-${bdD(t.birth)})`).join(', ')}</div>`:'';
+  const tRow=t=>{const d=bdD(t.birth),bd=new Date(t.birth);
+    return `<div class="t-row"><div class="av ${d===0?'av-danger':d<=7?'av-warn':'av-safe'}">${ini(t.name)}</div>
+    <div class="ti"><div class="t-name">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}</span></div>
+    <div class="t-sub">${bd.getMonth()+1}월 ${bd.getDate()}일 · 만 ${bdAge(t.birth)}세</div></div>
+    <span class="badge ${d===0?'b-danger':d<=7?'b-warn':'b-info'}">${d===0?'오늘 🎂':'D-'+d}</span></div>`;};
+  document.getElementById('bd-month-list').innerHTML=tm.length?tm.sort((a,b)=>new Date(a.birth).getDate()-new Date(b.birth).getDate()).map(tRow).join(''):'<div class="empty">이번 달 생일 없음</div>';
+  document.getElementById('bd-all-list').innerHTML=ts.length?[...ts].sort((a,b)=>bdD(a.birth)-bdD(b.birth)).map(tRow).join(''):'<div class="empty">생년월일 미등록</div>';
+  document.getElementById('bd-memo-log').innerHTML=data.bdMemos.length?[...data.bdMemos].reverse().map(m=>`<div class="log-item"><div class="log-header"><strong>${m.teacher}</strong> · ${m.year}년<span style="font-size:11px;color:var(--text3)">${m.date}</span></div><div class="log-detail">${m.memo}</div></div>`).join(''):'';
+}
+
+function renderLeave(){
+  const ts=data.teachers,n=new Date();
+  const activeTs=ts.filter(t=>t.branch!=='potential');
+  document.getElementById('lv-total').textContent=activeTs.length;
+  document.getElementById('lv-zero').textContent=activeTs.filter(t=>getQ(t.name)-getU(t.name)<=0).length;
+  document.getElementById('lv-thismonth').textContent=data.leaves.filter(l=>{const d=new Date(l.date);return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}).reduce((s,l)=>s+parseFloat(l.days),0);
+  const sortedTs=[...activeTs].sort((a,b)=>getU(b.name)-getU(a.name));
+  document.getElementById('lv-list').innerHTML=sortedTs.map(t=>{
+    const q=getQ(t.name),u=getU(t.name),r=q-u,p=Math.min(u/q*100,100);
+    return `<div style="padding:12px 0;border-bottom:0.5px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px"><div class="av av-safe" style="width:30px;height:30px;font-size:11px">${ini(t.name)}</div>
+        <div><div class="t-name">${t.name}</div><div class="t-sub">${t.branch}</div></div></div>
+        <div style="text-align:right"><span style="font-size:15px;font-weight:600">${r}</span><span style="font-size:11px;color:var(--text2)">일 잔여 (${u}/${q})</span></div>
+      </div>
+      <div class="risk-track"><div class="risk-fill ${r<=0?'rf-red':r<=3?'rf-amber':'rf-green'}" style="width:${p}%"></div></div>
+    </div>`;}).join('');
+  document.getElementById('lv-quota-list').innerHTML=activeTs.map(t=>`
+    <div class="toggle-row"><div class="toggle-label">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><input type="number" min="1" max="30" value="${getQ(t.name)}" style="width:58px;text-align:center;padding:4px 6px;font-size:13px" onchange="updateQuota('${t.name}',this.value)"><span style="font-size:12px;color:var(--text2)">일</span></div></div>`).join('');
+  document.getElementById('lv-history').innerHTML=data.leaves.length?[...data.leaves].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l=>`
+    <div class="log-item">
+      <div class="log-header"><strong>${l.teacher}</strong> · ${l.days}일 (${l.reason}) <span class="badge ${l.salaryDeducted?'b-danger':'b-safe'}" style="font-size:10px">${l.salaryDeducted?'차감':'차감없음'}</span><span style="font-size:11px;color:var(--text3)">${l.date}</span></div>
+      ${l.memo?`<div class="log-detail">${l.memo}</div>`:''}
+      <div style="margin-top:6px">
+        <button onclick="editLeave(${l.id})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;" title="수정">✏️ 수정</button>
+        <button onclick="deleteLeave(${l.id})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;" title="삭제">🗑️ 삭제</button>
+      </div>
+    </div>`).join(''):'<div class="empty">기록 없음</div>';
+}
+
+function renderExited(){
+  const ex=data.exited;
+  document.getElementById('ex-total').textContent=ex.length;
+  if(ex.length){
+    const avgMo=Math.round(ex.reduce((s,e)=>s+e.months,0)/ex.length);
+    document.getElementById('ex-avg').textContent=avgMo+'개월';
+    const reasons={};ex.forEach(e=>{reasons[e.reason]=(reasons[e.reason]||0)+1});
+    const top=Object.entries(reasons).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('ex-topreason').textContent=top?top[0].split('/')[0]:'-';
+    // pattern
+    const moMap={};
+    ex.forEach(e=>{const k=Math.floor(e.months/3)*3;moMap[k]=(moMap[k]||0)+1});
+    const patternHtml=Object.entries(moMap).sort((a,b)=>a[0]-b[0]).map(([k,v])=>`
+      <div class="risk-row"><div class="risk-label">${k}~${+k+3}개월</div>
+      <div class="risk-track"><div class="risk-fill rf-red" style="width:${v/ex.length*100}%"></div></div>
+      <div class="risk-num">${v}명</div></div>`).join('');
+    const reasonHtml=Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,c])=>`<span class="exit-tag">${r} ${c}건</span>`).join('');
+    document.getElementById('ex-pattern').innerHTML=`
+      <div style="margin-bottom:14px"><div class="card-title" style="margin-bottom:8px">퇴사 시점 분포</div>${patternHtml}</div>
+      <div><div class="card-title" style="margin-bottom:8px">퇴사 사유</div>${reasonHtml}</div>`;
+  } else {
+    document.getElementById('ex-avg').textContent='-';
+    document.getElementById('ex-topreason').textContent='-';
+    document.getElementById('ex-pattern').innerHTML='<div class="empty">퇴사자 데이터가 쌓이면 패턴이 보입니다</div>';
+  }
+  document.getElementById('ex-list').innerHTML=ex.length?[...ex].reverse().map(e=>`
+    <div class="log-item">
+      <div class="log-header">
+        <div style="display:flex;align-items:center;gap:8px"><div class="av av-ex">${ini(e.name)}</div>
+        <div><strong>${e.name}</strong> <span style="font-size:11px;color:var(--text3)">${e.branch}</span></div></div>
+        <span class="badge b-ex">${e.exitDate} 퇴사</span>
+      </div>
+      <div class="log-detail">근속 ${e.months}개월 · 사유: ${e.reason} · 재고용: ${e.rehire==='yes'?'가능':e.rehire==='maybe'?'경우에 따라':'불가'}
+      ${e.last?`<br>마지막 면담: ${e.last}`:''}${e.retro?`<br>원장 회고: ${e.retro}`:''}</div>
+    </div>`).join(''):'<div class="empty">퇴사자 없음</div>';
+}
+
+function populateSels(){
+  ['ci-teacher','iv-teacher','bd-teacher','lv-teacher','iv-filter','ex-teacher','rt-teacher','rt-filter'].forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    const v=s.value;
+    const opts=(id==='iv-filter'||id==='rt-filter')?'<option value="">전체 강사</option>':'<option value="">— 선택 —</option>';
+    s.innerHTML=opts+data.teachers.map(t=>`<option value="${t.name}">${t.name} (${t.branch})</option>`).join('');
+    s.value=v;
+  });
+}
+
+// ══ PROFILE MODAL ══
+function openProfile(name){
+  const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
+  if(!t)return;
+  currentProfileTeacher=name;
+  const isEx=!!data.exited.find(e=>e.name===name);
+  const isPotential=t.branch==='potential';
+  const el=id=>document.getElementById(id);
+  el('p-av').textContent=ini(name);
+  el('p-av').className='profile-av '+(isPotential?'':'')+(isEx?'av-ex':isPotential?'':'av-'+sc(t));
+  if(isPotential){el('p-av').style.background='var(--purple-bg)';el('p-av').style.color='var(--purple-text)';}
+  else{el('p-av').style.background='';el('p-av').style.color='';}
+  el('p-name').textContent=name+(isEx?' (퇴사)':isPotential?' ⭐':'');
+  el('p-meta').textContent=isPotential?'Potential 강사':`${t.branch}${t.position?' / '+t.position:''} · 입사 ${t.start}${isEx?' · 퇴사 '+t.exitDate:''}`;
+
+  // potential vs 일반 패널 전환
+  el('potential-panel').style.display=isPotential?'':'none';
+  el('normal-panel').style.display=isPotential?'none':'';
+
+  if(isPotential){
+    renderPotentialView(t);
+  } else {
+    const firstBtn=document.querySelector('#normal-panel .tab-inner-btn');
+    switchInner('info',firstBtn);
+    renderInnerInfo(name);
+    renderInnerGrowth(name);
+    renderInnerInterviews(name);
+    renderInnerSalary(name);
+    renderInnerRetention(name);
+    el('salary-add-form').style.display='none';
+    el('growth-add-form').style.display='none';
+  }
+  document.getElementById('profile-overlay').classList.add('open');
+}
+
+function renderPotentialView(t){
+  const el=id=>document.getElementById(id);
+  el('pv-start').textContent  = t.start||'미정';
+  el('pv-salary').textContent = (t.baseSalary||t.salary)?(t.baseSalary||t.salary)+'만원':'미정';
+  el('pv-birth').textContent  = t.birth||'미등록';
+  el('pv-phone').textContent  = t.phone||'미등록';
+  el('pv-memo').textContent   = t.memo||'없음';
+  el('potential-view-fields').style.display='';
+  el('potential-edit-fields').style.display='none';
+}
+
+function showPotentialEdit(){
+  const t=data.teachers.find(t=>t.name===currentProfileTeacher);
+  if(!t)return;
+  const el=id=>document.getElementById(id);
+  el('pe-start').value  = t.start||'';
+  el('pe-salary').value = t.baseSalary||t.salary||'';
+  el('pe-birth').value  = t.birth||'';
+  el('pe-phone').value  = t.phone||'';
+  el('pe-memo').value   = t.memo||'';
+  el('potential-view-fields').style.display='none';
+  el('potential-edit-fields').style.display='';
+}
+
+async function savePotentialEdit(){
+  const t=data.teachers.find(t=>t.name===currentProfileTeacher);
+  if(!t)return;
+  const el=id=>document.getElementById(id);
+  const sal=parseInt(el('pe-salary').value)||0;
+  const upd={start_date:el('pe-start').value||null, salary:sal, base_salary:sal,
+    birth:el('pe-birth').value||null, phone:el('pe-phone').value||null, memo:el('pe-memo').value||null};
+  const {error}=await sb.from('teachers').update(upd).eq('id',t.id);
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();render();
+  const refreshed=data.teachers.find(x=>x.id===t.id);
+  if(refreshed)renderPotentialView(refreshed);
+  alert('저장되었습니다!');
+}
+
+function cancelPotentialEdit(){
+  const t=data.teachers.find(t=>t.name===currentProfileTeacher);
+  if(t)renderPotentialView(t);
+}
+
+function closeProfile(e){if(e.target===document.getElementById('profile-overlay'))document.getElementById('profile-overlay').classList.remove('open')}
+
+function switchInner(id,btn){
+  document.querySelectorAll('.inner-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-inner-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('inner-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+function renderInnerInfo(name){
+  const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
+  if(!t)return;
+  const lbl=(txt)=>`<span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">${txt}</span>`;
+  const val=(v,fallback='미등록')=>`<div style="font-size:14px;font-weight:500;padding:3px 0 10px">${v||fallback}</div>`;
+  const isEx=!!data.exited.find(e=>e.name===name);
+
+  document.getElementById('inner-info').innerHTML=`
+    <div style="margin-bottom:16px">
+      <div class="g2">
+        <div>${lbl('지점')}${val(t.branch)}</div>
+        <div>${lbl('직급')}${val(t.position)}</div>
+      </div>
+      <div class="g2">
+        <div>${lbl('입사일')}${val(t.start)}</div>
+        <div>${lbl('계약 만료일')}${val(t.end)}</div>
+      </div>
+      <div class="g2">
+        <div>${lbl('생년월일')}${val(t.birth)}</div>
+        <div>${lbl('연락처')}${val(t.phone)}</div>
+      </div>
+      <div class="g2">
+        <div>${lbl('초봉')}${val(t.baseSalary||t.salary?(t.baseSalary||t.salary)+'만원':'')}</div>
+        <div>${lbl('현재 급여')}${val(t.currentSalary?(t.currentSalary)+'만원':t.salary?t.salary+'만원':'')}</div>
+      </div>
+      <div>${lbl('메모')}${val(t.memo,'없음')}</div>
+      ${(()=>{
+        if(!t.start)return '';
+        const svDate=severanceStartDate(t);
+        const sv=calcSeverance(t);
+        const days=workDays(svDate); // 퇴직금 발생일 기준
+        const isActive=isSeveranceActive(t);
+        const customLabel=t.severanceStart?` <span style="font-size:10px;background:#e0e7ff;color:#3730a3;padding:1px 5px;border-radius:6px;">지정일</span>`:'';
+        if(!isActive){
+          const remain=Math.max(0,Math.ceil((new Date(svDate)-new Date())/864e5));
+          return `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin-top:4px;">
+            <div style="font-size:12px;color:#166534;font-weight:600;">⏳ 퇴직금 발생까지 ${remain}일 남음${customLabel}</div>
+            <div style="font-size:11px;color:#4ade80;margin-top:2px;">발생 예정일: ${svDate}</div>
+          </div>`;
+        }
+        return `<div style="background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-top:4px;">
+          <div style="font-size:12px;color:#92400e;font-weight:600;margin-bottom:4px;">💼 퇴직금 발생 중 (${Math.floor(days/365)}년 ${Math.floor((days%365)/30)}개월 근무)${customLabel}</div>
+          <div style="font-size:20px;font-weight:800;color:#78350f;">예상 퇴직금: 약 ${sv}만원</div>
+          <div style="font-size:11px;color:#a16207;margin-top:2px;">발생일: ${svDate} · 오늘(${new Date().toISOString().slice(0,10)}) 기준</div>
+        </div>`;
+      })()}
+    </div>
+    ${isEx?'':`<button class="btn" style="width:auto" onclick="showInfoEdit('${name}')">✏️ 수정</button>`}
+    <div id="info-edit-form" style="display:none;margin-top:16px">
+      <div class="form-grid">
+        <div class="g2">
+          <div class="field"><label>지점</label>
+            <select id="ie-branch">
+              <option value="공릉">1호점 (공릉)</option>
+              <option value="중계">2호점 (중계)</option>
+              <option value="potential">Potential</option>
+            </select>
+          </div>
+          <div class="field"><label>직급</label>
+            <select id="ie-position">
+              <option value="">선택 안 함</option>
+              ${(data.positions||[]).map(p=>`<option value="${p}">${p}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>입사일</label><input type="date" id="ie-start"></div>
+          <div class="field"><label>계약 만료일</label><input type="date" id="ie-end"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label>생년월일</label><input type="date" id="ie-birth"></div>
+          <div class="field"><label>연락처</label><input type="text" id="ie-phone" placeholder="010-0000-0000"></div>
+        </div>
+        <div class="field"><label>초봉 (만원)</label><input type="number" id="ie-baseSalary" placeholder="예: 220"></div>
+        <div class="field"><label>퇴직금 발생일 <span style="font-size:11px;color:var(--text3);font-weight:400;">(비워두면 입사일+1년 자동)</span></label><input type="date" id="ie-severanceStart"></div>
+        <div class="field"><label>메모</label><textarea id="ie-memo"></textarea></div>
+        <div class="g2">
+          <button class="btn btn-green" onclick="saveInfoEdit('${name}')">저장</button>
+          <button class="btn" onclick="cancelInfoEdit('${name}')">취소</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function showInfoEdit(name){
+  const t=data.teachers.find(t=>t.name===name);
+  if(!t)return;
+  const el=id=>document.getElementById(id);
+  el('info-edit-form').style.display='';
+  el('ie-branch').value = t.branch||'공릉';
+  el('ie-position').value = t.position||'';
+  el('ie-start').value  = t.start||'';
+  el('ie-end').value    = t.end||'';
+  el('ie-birth').value  = t.birth||'';
+  el('ie-phone').value  = t.phone||'';
+  el('ie-baseSalary').value = t.baseSalary||t.salary||'';
+  el('ie-severanceStart').value = t.severanceStart||'';
+  el('ie-memo').value   = t.memo||'';
+}
+
+async function saveInfoEdit(name){
+  const t=data.teachers.find(t=>t.name===name);
+  if(!t)return;
+  const el=id=>document.getElementById(id);
+  const baseSal=parseFloat(el('ie-baseSalary').value)||0;
+  const upd={branch:el('ie-branch').value, position:el('ie-position').value||null,
+    start_date:el('ie-start').value||null, end_date:el('ie-end').value||null,
+    birth:el('ie-birth').value||null, phone:el('ie-phone').value||null, memo:el('ie-memo').value||null,
+    base_salary:baseSal||null, salary:baseSal||null,
+    severance_start:el('ie-severanceStart').value||null};
+  const {error}=await sb.from('teachers').update(upd).eq('id',t.id);
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();render();
+  renderInnerInfo(name);
+  const fresh=data.teachers.find(x=>x.id===t.id);
+  if(fresh){
+    document.getElementById('p-meta').textContent=`${fresh.branch}${fresh.position?' / '+fresh.position:''} · 입사 ${fresh.start||''}`;
+  }
+  alert('저장되었습니다!');
+}
+
+function cancelInfoEdit(name){
+  document.getElementById('info-edit-form').style.display='none';
+}
+
+function renderInnerGrowth(name){
+  const gh=data.growthHistory[name]||[];
+  const typeIcon={role:'🏆',praise:'⭐',skill:'📚',milestone:'🎯'};
+  const typeLabel={role:'역할 확대',praise:'칭찬·인정',skill:'역량 성장',milestone:'마일스톤'};
+  const typeColor={role:'b-safe',praise:'b-info',skill:'b-purple',milestone:'b-warn'};
+  const inner=document.getElementById('inner-growth');
+  inner.innerHTML=(gh.length?'<div class="tl">'+[...gh].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(g=>`
+    <div class="tl-item">
+      <div class="tl-dot ${g.type==='role'?'done':g.type==='milestone'?'now':'blue'}"></div>
+      <div class="tl-date">${g.date}</div>
+      <div class="tl-text">${typeIcon[g.type]||'•'} ${g.content}</div>
+      <span class="badge ${typeColor[g.type]||'b-info'}" style="font-size:10px;margin-top:2px">${typeLabel[g.type]||g.type}</span>
+      <button onclick="openEditModal('growth',${g.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;margin-top:2px;" title="수정">✏️ 수정</button><button onclick="deleteRecord('growth',${g.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;margin-top:2px;" title="삭제">🗑️ 삭제</button>
+    </div>`).join('')+'</div>':'<div class="empty">성장 기록이 없습니다</div>')
+  +`<button class="btn btn-sm" style="margin-top:12px;width:auto" onclick="document.getElementById('growth-add-form').style.display=document.getElementById('growth-add-form').style.display==='none'?'block':'none'">+ 성장 기록 추가</button>`;
+}
+
+function renderInnerInterviews(name){
+  const ivs=data.interviews.filter(i=>i.teacher===name);
+  const typeColor={'정기':'b-info','재계약':'b-safe','고충':'b-warn','칭찬':'b-safe','경고':'b-danger','수시':'b-info'};
+  document.getElementById('inner-interviews').innerHTML=ivs.length
+    ?[...ivs].reverse().map(iv=>{
+      const c=Object.entries(typeColor).find(([k])=>iv.type&&iv.type.includes(k));
+      return `<div class="log-item">
+        <div class="log-header"><span class="badge ${c?c[1]:'b-info'}">${iv.type}</span><span style="font-size:11px;color:var(--text3)">${iv.date}</span></div>
+        <div class="log-detail">${iv.said?`💬 ${iv.said}<br>`:''}${iv.feedback?`📝 ${iv.feedback}`:''}</div>
+        ${iv.promise?`<div class="log-promise ${iv.promiseDone?'done':''}">📌 ${iv.promise} ${iv.promiseDone?'✅ 이행완료':''}</div>`:''}
+        <button onclick="openEditModal('interview',${iv.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;margin-top:4px;" title="수정">✏️ 수정</button><button onclick="deleteRecord('interview',${iv.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;margin-top:4px;" title="삭제">🗑️ 삭제</button></div>`;}).join('')
+    :'<div class="empty">면담 기록 없음</div>';
+}
+
+function renderInnerSalary(name){
+  const sh=(data.salaryHistory[name]||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
+  const base=t?.baseSalary||t?.salary||0;
+  let html='';
+  if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${base}만원</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
+  sh.forEach((s,i)=>{
+    const prev=i===0?base:sh[i-1].amount;
+    const diff=s.amount-prev;
+    const pr=(()=>{const r=s.reason||'';const m=r.match(/^\[([^\]]*)\]\[([^\]]*)\](.*)?$/);return m?{p:m[1],i:m[2],n:(m[3]||'').trim()}:{p:'',i:'',n:r};})();
+    const tags=[pr.p,pr.i].filter(Boolean).map(t=>'<span style="font-size:11px;background:#e8f4fd;color:#2196f3;padding:2px 6px;border-radius:10px;margin-right:3px;">'+t+'</span>').join('');
+    const pct=prev>0?Math.round(diff/prev*1000)/10:0;
+    const changeStr=diff>0?'+'+pct+'%':diff<0?pct+'%':'';
+    html+=`<div class="salary-row"><div class="salary-date">${s.date}</div><div class="salary-amount">${s.amount}만원</div><div class="salary-change ${diff>0?'sc-up':diff<0?'sc-down':'sc-same'}">${changeStr||'동일'}</div><div style="flex:1;font-size:12px;color:#555;padding-left:8px;">${tags}${pr.n}</div><button onclick="openEditModal('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="수정">✏️</button><button onclick="deleteRecord('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;
+  });
+  document.getElementById('inner-salary').innerHTML=(html||'<div class="empty">급여 기록 없음</div>')
+    +`<button class="btn btn-sm" style="margin-top:12px;width:auto" onclick="document.getElementById('salary-add-form').style.display=document.getElementById('salary-add-form').style.display==='none'?'block':'none'">+ 급여 변경 기록</button>`;
+}
+
+function renderInnerCheckins(name){
+  const cs=data.checkins.filter(c=>c.teacher===name);
+  const sL={none:'없음',burnout:'번아웃',communication:'소통회피',personal:'개인사정',overload:'수업부담',jobhunt:'타직장'};
+  const el=document.getElementById('inner-checkins');
+  if(!el)return;
+  el.innerHTML=cs.length
+    ?[...cs].reverse().map(c=>`<div class="log-item"><div class="log-header"><strong>${c.stage}</strong> · 만족도 ${c.score}/10<span style="font-size:11px;color:var(--text3)">${c.date}</span></div><div class="log-detail">${c.hard?`힘든점: ${c.hard}<br>`:''}${c.need?`지원요청: ${c.need}<br>`:''}신호: ${sL[c.signal]||'없음'}<button onclick="openEditModal('checkin',${c.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;margin-left:8px;" title="수정">✏️</button><button onclick="deleteRecord('checkin',${c.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;" title="삭제">🗑️</button></div></div>`).join('')
+    :'<div class="empty">체크인 기록 없음</div>';
+}
+
+function renderInnerRetention(name){
+  const rs=(data.retentionRates||[]).filter(r=>r.teacher===name).sort((a,b)=>b.month.localeCompare(a.month));
+  const el=document.getElementById('inner-retention');
+  if(!el)return;
+  if(!rs.length){el.innerHTML='<div class="empty">등록률 기록 없음</div>';return;}
+  const avg=Math.round(rs.reduce((s,r)=>s+r.rate,0)/rs.length*10)/10;
+  const latest=rs[0].rate;
+  const color=latest>=80?'var(--green)':latest>=60?'#f59e0b':'#ef4444';
+  el.innerHTML=`
+    <div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px;">최근 등록률</div>
+        <div style="font-size:28px;font-weight:800;color:${color};">${latest}%</div>
+      </div>
+      <div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px;">평균 등록률</div>
+        <div style="font-size:28px;font-weight:800;color:var(--text1);">${avg}%</div>
+      </div>
+    </div>
+    ${rs.map(r=>{
+      const c=r.rate>=80?'var(--green)':r.rate>=60?'#f59e0b':'#ef4444';
+      const bar=Math.round(r.rate);
+      return `<div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+          <span style="font-weight:600;color:var(--text2);">${r.month}</span>
+          <span style="font-weight:700;color:${c};">${r.rate}%</span>
+        </div>
+        <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${bar}%;background:${c};border-radius:4px;transition:width .4s;"></div>
+        </div>
+        ${r.memo?`<div style="font-size:11px;color:var(--text3);margin-top:3px;">📝 ${r.memo}</div>`:''}
+      </div>`;
+    }).join('')}`;
+}
+
+// ══ ACTIONS (Supabase 연동) ══
+
+function toggleAddForm(){
+  const body=document.getElementById('add-form-body');
+  const chev=document.getElementById('add-form-chevron');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  chev.style.transform=open?'rotate(180deg)':'';
+}
+
+async function addTeacher(){
+  const name=document.getElementById('t-name').value.trim();
+  const start=document.getElementById('t-start').value;
+  const end=document.getElementById('t-end').value;
+  const branchVal=document.getElementById('t-branch').value;
+  const isPotential=branchVal==='potential';
+  if(!name){alert('이름을 입력해주세요');return}
+  if(!isPotential&&(!start||!end)){alert('이름, 입사일, 만료일을 입력해주세요');return}
+  const sal=parseInt(document.getElementById('t-salary').value)||0;
+  const row={name, branch:branchVal, position:document.getElementById('t-position').value||null,
+    start_date:start||null, end_date:isPotential?null:(end||null),
+    birth:document.getElementById('t-birth').value||null,
+    phone:document.getElementById('t-phone').value.trim()||null,
+    memo:document.getElementById('t-memo').value.trim()||null,
+    status:'safe', salary:sal, base_salary:sal, current_salary:sal,
+    sort_order:data.teachers.length};
+  const {error}=await sb.from('teachers').insert(row);
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();render();
+  ['t-name','t-memo','t-phone','t-birth','t-salary'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=''});
+  // 추가 완료 후 폼 자동으로 접기
+  const body=document.getElementById('add-form-body');
+  const chev=document.getElementById('add-form-chevron');
+  if(body){body.style.display='none'; chev.style.transform='';}
+  alert(name+' 강사가 추가되었습니다!');
+}
+
+async function removeTeacher(id){
+  const t=data.teachers.find(t=>t.id===id);if(!t)return;
+  if(!confirm(t.name+' 강사를 삭제할까요?'))return;
+  const {error}=await sb.from('teachers').delete().eq('id',id);
+  if(error){alert('삭제 실패: '+error.message);return}
+  await loadAll();render();
+}
+
+async function saveInterview(){
+  const teacher=document.getElementById('iv-teacher').value;
+  if(!teacher){alert('강사를 선택해주세요');return}
+  const row={teacher_name:teacher, type:document.getElementById('iv-type').value,
+    said:document.getElementById('iv-said').value||null,
+    feedback:document.getElementById('iv-feedback').value||null,
+    promise:document.getElementById('iv-promise').value||null,
+    promise_done:false,
+    interview_date:document.getElementById('iv-date').value||new Date().toISOString().split('T')[0]};
+  const {error}=await sb.from('interviews').insert(row);
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();render();
+  ['iv-said','iv-feedback','iv-promise'].forEach(i=>document.getElementById(i).value='');
+  alert('면담이 기록되었습니다!');
+}
+
+async function markDone(idx){
+  const iv=data.interviews[idx];if(!iv||!iv.id)return;
+  const {error}=await sb.from('interviews').update({promise_done:true}).eq('id',iv.id);
+  if(error){alert('실패: '+error.message);return}
+  await loadAll();render();
+}
+
+async function saveCheckin(){
+  const teacher=document.getElementById('ci-teacher').value;
+  if(!teacher){alert('강사를 선택해주세요');return}
+  const signal=document.getElementById('ci-signal').value;
+  const row={teacher_name:teacher, stage:document.getElementById('ci-stage').value,
+    score:parseInt(document.getElementById('ci-score').value)||7,
+    hard:document.getElementById('ci-hard').value||null,
+    need:document.getElementById('ci-need').value||null,
+    signal, checkin_date:new Date().toISOString().split('T')[0]};
+  const {error}=await sb.from('checkins').insert(row);
+  if(error){alert('저장 실패: '+error.message);return}
+  // 강사 상태 업데이트
+  const t=data.teachers.find(t=>t.name===teacher);
+  if(t){
+    let newStatus=t.status;
+    if(signal==='jobhunt')newStatus='danger';
+    else if(['burnout','communication','overload','personal'].includes(signal))newStatus='warn';
+    if(newStatus!==t.status){
+      await sb.from('teachers').update({status:newStatus}).eq('id',t.id);
+    }
+  }
+  await loadAll();render();
+  ['ci-hard','ci-need'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('ci-signal').value='none';
+  document.getElementById('ci-score').value=7;
+  document.getElementById('ci-score-out').textContent='7 / 10';
+  alert('저장되었습니다!');
+}
+
+async function processExit(){
+  const name=document.getElementById('ex-teacher').value;
+  if(!name){alert('강사를 선택해주세요');return}
+  const t=data.teachers.find(t=>t.name===name);
+  if(!t){alert('재직 강사가 아닙니다');return}
+  if(!confirm(`${name} 강사를 퇴사 처리할까요?`))return;
+  const exitDate=document.getElementById('ex-date').value||new Date().toISOString().split('T')[0];
+  const exRow={name:t.name, branch:t.branch, position:t.position,
+    start_date:t.start||null, end_date:t.end||null, exit_date:exitDate,
+    months:moIn(t.start||exitDate),
+    reason:document.getElementById('ex-reason').value,
+    last_interview:document.getElementById('ex-last').value||null,
+    retro:document.getElementById('ex-retro').value||null,
+    rehire:document.getElementById('ex-rehire').value,
+    birth:t.birth||null, phone:t.phone||null, memo:t.memo||null,
+    salary:t.salary||0, base_salary:t.baseSalary||0};
+  const {error:e1}=await sb.from('exited_teachers').insert(exRow);
+  if(e1){alert('퇴사 처리 실패: '+e1.message);return}
+  const {error:e2}=await sb.from('teachers').delete().eq('id',t.id);
+  if(e2){alert('재직 삭제 실패: '+e2.message);return}
+  await loadAll();render();
+  ['ex-last','ex-retro'].forEach(i=>document.getElementById(i).value='');
+  alert(name+' 강사가 퇴사 처리되었습니다');
+}
+
+async function saveSalary(){
+  const name=currentProfileTeacher;
+  if(!name){alert('강사 프로필을 먼저 열어주세요');return}
+  const amountEl=document.getElementById('sal-amount');
+  const dateEl=document.getElementById('sal-date');
+  const reasonEl=document.getElementById('sal-reason');
+  const amount=parseInt(amountEl.value);
+  const date=dateEl.value||new Date().toISOString().split('T')[0];
+  if(!amount||isNaN(amount)){alert('금액을 입력해주세요');return}
+  const payType=document.getElementById('sal-pay-type').value;
+  const insType=document.getElementById('sal-ins-type').value;
+  const reasonNote=reasonEl.value.trim();
+  const fullReason='['+payType+']['+insType+']'+(reasonNote?' '+reasonNote:'');
+  const {error:e1}=await sb.from('salary_history').insert({teacher_name:name, amount, change_date:date, reason:fullReason});
+  if(e1){alert('저장 실패: '+e1.message);return}
+  // 강사 currentSalary 업데이트
+  const t=data.teachers.find(t=>t.name===name);
+  if(t){await sb.from('teachers').update({current_salary:amount}).eq('id',t.id);}
+  await loadAll();
+  amountEl.value='';reasonEl.value='';
+  dateEl.value=new Date().toISOString().split('T')[0];
+  document.getElementById('salary-add-form').style.display='none';
+  renderInnerSalary(name);render();
+  alert('급여 변경이 저장되었습니다!');
+}
+
+async function saveGrowth(){
+  const name=currentProfileTeacher;
+  if(!name){alert('강사 프로필을 먼저 열어주세요');return}
+  const contentEl=document.getElementById('gr-content');
+  const dateEl=document.getElementById('gr-date');
+  const content=contentEl.value.trim();
+  const type=document.getElementById('gr-type').value;
+  const date=dateEl.value||new Date().toISOString().split('T')[0];
+  if(!content){alert('내용을 입력해주세요');return}
+  const {error}=await sb.from('growth_history').insert({teacher_name:name, content, type, record_date:date});
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();
+  contentEl.value='';
+  dateEl.value=new Date().toISOString().split('T')[0];
+  document.getElementById('growth-add-form').style.display='none';
+  renderInnerGrowth(name);
+  alert('성장 기록이 저장되었습니다!');
+}
+
+function toggleBtn(b){b.classList.toggle('on');b.classList.toggle('off')}
+
+async function saveBdMemo(){
+  const teacher=document.getElementById('bd-teacher').value;
+  const memo=document.getElementById('bd-memo').value.trim();
+  if(!teacher||!memo){alert('강사와 메모를 입력해주세요');return}
+  const year=document.getElementById('bd-year').value||String(new Date().getFullYear());
+  const {error}=await sb.from('birthday_memos').insert({teacher_name:teacher, year, memo});
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();renderBirthday();
+  document.getElementById('bd-memo').value='';
+  document.getElementById('bd-year').value='';
+}
+
+async function saveLeave(){
+  const teacher=document.getElementById('lv-teacher').value;
+  const date=document.getElementById('lv-date').value;
+  if(!teacher||!date){alert('강사와 날짜를 선택해주세요');return}
+  const days=parseFloat(document.getElementById('lv-days').value);
+  const remain=getQ(teacher)-getU(teacher);
+  if(days>remain&&!confirm(`잔여(${remain}일)보다 많습니다. 기록할까요?`))return;
+  const {error}=await sb.from('leaves').insert({teacher_name:teacher, days, leave_date:date,
+    reason:document.getElementById('lv-reason').value,
+    salary_deducted:document.getElementById('lv-deduct').value==='yes',
+    memo:document.getElementById('lv-memo').value.trim()||null});
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();renderLeave();
+  document.getElementById('lv-memo').value='';
+  alert('기록되었습니다');
+}
+
+async function saveRetention(){
+  const teacher=document.getElementById('rt-teacher').value;
+  const month=document.getElementById('rt-month').value;
+  if(!teacher){alert('강사를 선택해주세요');return}
+  if(!month){alert('기록 월을 선택해주세요');return}
+  const rate=parseFloat(document.getElementById('rt-rate').value);
+  const memo=document.getElementById('rt-memo').value.trim();
+  // 같은 월에 같은 강사 기록이 있으면 덮어쓸지 확인
+  const existing=data.retentionRates.find(r=>r.teacher===teacher&&r.month===month);
+  if(existing){
+    if(!confirm(`${teacher}의 ${month} 기록이 이미 있습니다. 덮어쓸까요?`))return;
+    const {error:e0}=await sb.from('retention_rates').delete().eq('id',existing.id);
+    if(e0){alert('기존 기록 삭제 실패: '+e0.message);return}
+  }
+  const {error}=await sb.from('retention_rates').insert({teacher_name:teacher, rate, record_month:month, memo:memo||null});
+  if(error){alert('저장 실패: '+error.message);return}
+  await loadAll();render();
+  document.getElementById('rt-memo').value='';
+  alert('등록률이 저장되었습니다!');
+}
+
+async function removeRetention(id){
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  const {error}=await sb.from('retention_rates').delete().eq('id',id);
+  if(error){alert('삭제 실패: '+error.message);return}
+  await loadAll();render();
+}
+
+function renderRetention(){
+  const logEl=document.getElementById('retention-log');
+  const monthlyEl=document.getElementById('retention-monthly');
+  if(!logEl||!monthlyEl) return;
+
+  // 월별 평균
+  const byMonth={};
+  data.retentionRates.forEach(r=>{
+    if(!byMonth[r.month]) byMonth[r.month]={sum:0,count:0,records:[]};
+    byMonth[r.month].sum+=r.rate;
+    byMonth[r.month].count+=1;
+    byMonth[r.month].records.push(r);
+  });
+  const months=Object.keys(byMonth).sort().reverse();
+  if(!months.length){
+    monthlyEl.innerHTML='<div class="empty" style="padding:16px;font-size:13px">아직 등록률 기록이 없습니다</div>';
+  } else {
+    monthlyEl.innerHTML=months.slice(0,6).map(m=>{
+      const data_m=byMonth[m];
+      const avg=(data_m.sum/data_m.count).toFixed(1);
+      const cls = avg>=85?'rf-green':avg>=70?'rf-amber':'rf-red';
+      return `<div class="risk-row">
+        <div class="risk-label">${m}</div>
+        <div class="risk-track"><div class="risk-fill ${cls}" style="width:${Math.min(avg,100)}%"></div></div>
+        <div class="risk-num">${avg}%</div>
+      </div>
+      <div class="t-sub" style="font-size:11px;margin:-4px 0 10px 100px">${data_m.count}명 기록</div>`;
+    }).join('');
+  }
+
+  // 필터 적용된 로그
+  const filter=document.getElementById('rt-filter')?.value||'';
+  let list=filter?data.retentionRates.filter(r=>r.teacher===filter):data.retentionRates;
+  if(!list.length){
+    logEl.innerHTML='<div class="empty">기록이 없습니다</div>';
+    return;
+  }
+  // 월 내림차순, 같은 월 안에선 강사 이름순
+  list=[...list].sort((a,b)=>{
+    if(a.month!==b.month) return b.month.localeCompare(a.month);
+    return a.teacher.localeCompare(b.teacher);
+  });
+  logEl.innerHTML=list.map(r=>{
+    const cls=r.rate>=85?'b-safe':r.rate>=70?'b-warn':'b-danger';
+    return `<div class="log-item">
+      <div class="log-header">
+        <div><strong>${r.teacher}</strong> · <span style="font-size:12px;color:var(--text3)">${r.month}</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge ${cls}">${r.rate}%</span>
+          <button class="btn btn-sm" style="padding:2px 6px;font-size:11px;color:var(--red-text);border-color:var(--red)" onclick="removeRetention(${r.id})">삭제</button>
+        </div>
+      </div>
+      ${r.memo?`<div class="log-detail">${r.memo}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// 강사별 가장 최신 등록률
+function latestRetention(teacherName){
+  const records=data.retentionRates.filter(r=>r.teacher===teacherName);
+  if(!records.length) return null;
+  return records.sort((a,b)=>b.month.localeCompare(a.month))[0];
+}
+
+async function updateQuota(name,v){
+  const quota=parseInt(v)||15;
+  const {error}=await sb.from('leave_quotas').upsert({teacher_name:name, quota});
+  if(error){alert('저장 실패: '+error.message);return}
+  data.leaveQuota[name]=quota;
+  renderLeave();
+}
+
+function toggleQuotaSection(){
+  const body=document.getElementById('quota-body');
+  const chevron=document.getElementById('quota-chevron');
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  chevron.style.transform=open?'':'rotate(180deg)';
+}
+
+function toggleHistorySection(){
+  const body=document.getElementById('history-body');
+  const chevron=document.getElementById('history-chevron');
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  chevron.style.transform=open?'':'rotate(180deg)';
+}
+
+async function deleteLeave(id){
+  if(!confirm('연차 기록을 삭제할까요? 되돌릴 수 없어요.'))return;
+  const {error}=await sb.from('leaves').delete().eq('id',id);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  await loadAll();renderLeave();
+}
+
+function editLeave(id){
+  const rec=data.leaves.find(r=>String(r.id)===String(id));
+  if(!rec){alert('기록을 찾을 수 없어요.');return;}
+  const fi=s=>`<div style="margin-bottom:12px"><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600">${s}</label>`;
+  const daysOpts=[0.5,1,2,3,5].map(d=>`<option value="${d}"${parseFloat(rec.days)===d?' selected':''}>${d===0.5?'반차':d+'일'}</option>`).join('');
+  const reasonOpts=['개인 사정','병가','경조사','여행','기타'].map(r=>`<option${rec.reason===r?' selected':''}>${r}</option>`).join('');
+  const deductOpts=`<option value="no"${!rec.salaryDeducted?' selected':''}>차감 없음</option><option value="yes"${rec.salaryDeducted?' selected':''}>차감함</option>`;
+  const inp=(id,type,val)=>`<input id="${id}" type="${type}" value="${String(val??'').replace(/"/g,'&quot;')}" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;box-sizing:border-box">`;
+  const sel=(id,opts)=>`<select id="${id}" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px">${opts}</select>`;
+  const tex=(id,val)=>`<textarea id="${id}" rows="2" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box">${String(val??'').replace(/</g,'&lt;')}</textarea>`;
+  document.getElementById('edit-modal-title').textContent='연차 기록 수정';
+  document.getElementById('edit-modal-body').innerHTML=
+    fi('날짜')+inp('em-leave-date','date',rec.date)+'</div>'+
+    fi('일수')+sel('em-leave-days',daysOpts)+'</div>'+
+    fi('사유')+sel('em-leave-reason',reasonOpts)+'</div>'+
+    fi('급여 차감')+sel('em-leave-deduct',deductOpts)+'</div>'+
+    fi('메모')+tex('em-leave-memo',rec.memo||'')+'</div>';
+  const btn=document.getElementById('edit-save-btn');
+  if(btn){btn.textContent='저장';btn.onclick=saveLeaveEdit;}
+  window._leaveEditId=rec.id;
+  document.getElementById('edit-modal').style.display='block';
+}
+
+async function saveLeaveEdit(){
+  const id=window._leaveEditId;
+  if(!id){alert('수정할 기록을 찾을 수 없어요.');return;}
+  const v=s=>document.getElementById(s);
+  const ud={leave_date:v('em-leave-date').value, days:parseFloat(v('em-leave-days').value),
+    reason:v('em-leave-reason').value, salary_deducted:v('em-leave-deduct').value==='yes',
+    memo:v('em-leave-memo').value||null};
+  const btn=document.getElementById('edit-save-btn');
+  if(btn)btn.textContent='저장 중...';
+  const {error}=await sb.from('leaves').update(ud).eq('id',id);
+  if(error){alert('저장 오류: '+error.message);if(btn)btn.textContent='저장';return;}
+  window._leaveEditId=null;
+  if(btn)btn.onclick=saveEdit;
+  document.getElementById('edit-modal').style.display='none';
+  await loadAll();renderLeave();
+}
+
+
+function saveSettings(){alert('저장되었습니다')}
+
+function renderPositionList(){
+  const el=document.getElementById('position-list');
+  if(!el)return;
+  el.innerHTML=data.positions.map((p,i)=>`
+    <div class="toggle-row" style="padding:7px 0">
+      <span style="font-size:13px">${p}</span>
+      <button class="btn btn-sm" style="width:auto;padding:2px 8px;font-size:11px;color:var(--red-text);border-color:var(--red)" onclick="removePosition(${i})">삭제</button>
+    </div>`).join('');
+  populatePositionSelect();
+}
+
+function populatePositionSelect(){
+  const sel=document.getElementById('t-position');
+  if(!sel)return;
+  const v=sel.value;
+  sel.innerHTML='<option value="">선택 안 함</option>'+data.positions.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(v)sel.value=v;
+}
+
+async function savePositions(){
+  const {error}=await sb.from('settings').upsert({key:'positions', value:data.positions});
+  if(error){alert('저장 실패: '+error.message);}
+}
+
+async function addPosition(){
+  const inp=document.getElementById('new-position');
+  const val=inp.value.trim();
+  if(!val){alert('직급명을 입력해주세요');return}
+  if(data.positions.includes(val)){alert('이미 있는 직급입니다');return}
+  data.positions.push(val);
+  await savePositions();
+  renderPositionList();inp.value='';
+}
+
+async function removePosition(i){
+  if(!confirm(data.positions[i]+' 직급을 삭제할까요?'))return;
+  data.positions.splice(i,1);
+  await savePositions();
+  renderPositionList();
+}
+
+function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='awesome-hr-backup.json';a.click()}
+function clearData(){alert('전체 초기화는 Supabase 대시보드에서 직접 하세요 (안전을 위해)')}
+
+// 페이지 로드 시 DB에서 읽어와서 렌더링
+document.addEventListener('DOMContentLoaded', async ()=>{
+  // 로딩 표시
+  const loadingMsg=document.createElement('div');
+  loadingMsg.id='loading-msg';
+  loadingMsg.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;z-index:9999;font-size:14px;color:#666';
+  loadingMsg.textContent='데이터를 불러오는 중...';
+  document.body.appendChild(loadingMsg);
+
+  await loadAll();
+
+  const today=new Date().toISOString().split('T')[0];
+  ['t-start','iv-date','lv-date','ex-date','gr-date','sal-date'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=today});
+  const thisMonth=today.slice(0,7);
+  const rtMonth=document.getElementById('rt-month');if(rtMonth)rtMonth.value=thisMonth;
+  const e=new Date();e.setFullYear(e.getFullYear()+1);
+  const tEnd=document.getElementById('t-end');if(tEnd)tEnd.value=e.toISOString().split('T')[0];
+
+  // 대시보드로 초기 로드 (서브탭 설정 포함)
+  go('dashboard');
+
+  document.getElementById('loading-msg').remove();
+});
+</script>
+
+<!-- ══ 수정 모달 ══ -->
+<div id="edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:99999;overflow-y:auto;padding:20px;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;padding:24px;max-width:480px;margin:0 auto;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+    <button onclick="closeEditModal()" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;">✕</button>
+    <h3 id="edit-modal-title" style="margin:0 0 18px;font-size:16px;font-weight:700;"></h3>
+    <div id="edit-modal-body"></div>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;">
+      <button onclick="closeEditModal()" style="padding:9px 18px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;">취소</button>
+      <button id="edit-save-btn" onclick="saveEdit()" style="padding:9px 18px;background:#4caf50;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ 수정 기능 ══
+let _editCtx=null;
+const _ef=(label,input)=>`<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">${label}</label>${input}</div>`;
+const _ei=(id,type,val)=>`<input id="${id}" type="${type}" value="${String(val??'').replace(/"/g,'&quot;')}" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;box-sizing:border-box;font-size:14px;">`;
+const _et=(id,val,r)=>`<textarea id="${id}" rows="${r||3}" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;box-sizing:border-box;font-size:14px;resize:vertical;">${String(val??'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>`;
+const _es=(id,opts)=>`<select id="${id}" style="width:100%;padding:9px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;">${opts}</select>`;
+
+function openEditModal(section,id,teacherName){
+  let rec;
+  if(section==='salary') rec=(data.salaryHistory[teacherName]||[]).find(r=>r.id===id);
+  else if(section==='growth') rec=(data.growthHistory[teacherName]||[]).find(r=>r.id===id);
+  else if(section==='interview') rec=data.interviews.find(r=>r.id===id);
+  else if(section==='checkin') rec=data.checkins.find(r=>r.id===id);
+  else if(section==='leave') rec=data.leaves.find(r=>r.id===id);
+  if(!rec && section!=='baseSalary'){alert('기록을 찾을 수 없어요.');return;}
+  _editCtx={section,record:rec,teacherName};
+  const title=document.getElementById('edit-modal-title');
+  const body=document.getElementById('edit-modal-body');
+  const btn=document.getElementById('edit-save-btn');
+  if(btn) btn.textContent='저장';
+
+  if(section==='salary'){
+    title.textContent='급여 기록 수정';
+    const r=rec.reason||'';const m=r.match(/^\[([^\]]*)\]\[([^\]]*)\](.*)?$/);
+    const pt=m?m[1]:'월급';const it=m?m[2]:'4대보험';const nt=m?(m[3]||'').trim():r;
+    body.innerHTML=_ef('날짜',_ei('em-date','date',rec.date))+_ef('금액 (만원)',_ei('em-amount','number',rec.amount))+
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">급여 유형</label>${_es('em-pay-type',`<option ${pt==='월급'?'selected':''}>월급</option><option ${pt==='시급'?'selected':''}>시급</option>`)}</div>
+        <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">보험 유형</label>${_es('em-ins-type',`<option ${it==='4대보험'?'selected':''}>4대보험</option><option ${it==='3.3%'?'selected':''}>3.3%</option>`)}</div>
+      </div>`+_ef('사유',_ei('em-reason','text',nt));
+  } else if(section==='growth'){
+    title.textContent='성장 기록 수정';
+    const types=[['role','역할 확대'],['praise','칭찬·인정'],['skill','역량 성장'],['milestone','마일스톤'],['other','기타']];
+    body.innerHTML=_ef('날짜',_ei('em-date','date',rec.date))+
+      _ef('유형',_es('em-type',types.map(([v,l])=>`<option value="${v}" ${rec.type===v?'selected':''}>${l}</option>`).join('')))+
+      _ef('내용',_et('em-content',rec.content,4));
+  } else if(section==='interview'){
+    title.textContent='면담 기록 수정';
+    body.innerHTML=_ef('날짜',_ei('em-date','date',rec.date))+_ef('면담 유형',_ei('em-type','text',rec.type))+
+      _ef('교사 발언',_et('em-said',rec.said,3))+_ef('피드백',_et('em-feedback',rec.feedback,3))+
+      _ef('약속',_et('em-promise',rec.promise,2))+
+      `<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="em-promise-done" ${rec.promiseDone?'checked':''}>
+        <label for="em-promise-done" style="font-size:14px;">약속 이행 완료</label>
+      </div>`;
+  } else if(section==='checkin'){
+    title.textContent='체크인 기록 수정';
+    body.innerHTML=_ef('날짜',_ei('em-date','date',rec.date))+_ef('단계',_ei('em-stage','text',rec.stage))+
+      _ef('만족도 (0-10)',_ei('em-score','number',rec.score))+
+      _ef('힘든 점',_et('em-hard',rec.hard,2))+_ef('지원 요청',_et('em-need',rec.need,2));
+  } else if(section==='leave'){
+    title.textContent='연차 기록 수정';
+    const daysOpts=[0.5,1,2,3,5].map(d=>`<option value="${d}" ${parseFloat(rec.days)===d?'selected':''}>${d===0.5?'반차':d+'일'}</option>`).join('');
+    const reasonOpts=['개인 사정','병가','경조사','여행','기타'].map(r=>`<option ${rec.reason===r?'selected':''}>${r}</option>`).join('');
+    const deductOpts=`<option value="no" ${!rec.salaryDeducted?'selected':''}>차감 없음</option><option value="yes" ${rec.salaryDeducted?'selected':''}>차감함</option>`;
+    body.innerHTML=_ef('날짜',_ei('em-leave-date','date',rec.date))+
+      _ef('일수',_es('em-leave-days',daysOpts))+
+      _ef('사유',_es('em-leave-reason',reasonOpts))+
+      _ef('급여 차감',_es('em-leave-deduct',deductOpts))+
+      _ef('메모',_et('em-leave-memo',rec.memo||'',2));
+  } else if(section==='baseSalary'){
+    title.textContent='초봉 수정';
+    const teacher=data.teachers.find(t=>t.name===teacherName)||data.exited.find(e=>e.name===teacherName);
+    body.innerHTML=_ef('초봉 (만원)',_ei('em-base-amount','number',teacher?.baseSalary||0));
+  }
+  document.getElementById('edit-modal').style.display='block';
+}
+
+function closeEditModal(){
+  document.getElementById('edit-modal').style.display='none';
+  _editCtx=null;
+}
+
+async function deleteRecord(section,id,teacherName){
+  const labels={'salary':'급여 기록','growth':'성장 기록','interview':'면담 기록','checkin':'체크인 기록'};
+  const tables={'salary':'salary_history','growth':'growth_history','interview':'interviews','checkin':'checkins'};
+  if(!confirm((labels[section]||'기록')+'을 삭제할까요? 되돌릴 수 없어요.'))return;
+  const {error}=await sb.from(tables[section]).delete().eq('id',id);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  await loadAll();renderProfile(teacherName);
+}
+
+async function deleteBaseSalary(teacherName){
+  if(!confirm('초봉 기록을 삭제(0으로 초기화)할까요?'))return;
+  const teacher=data.teachers.find(t=>t.name===teacherName)||data.exited.find(e=>e.name===teacherName);
+  if(!teacher){alert('강사를 찾을 수 없어요.');return;}
+  const tbl=data.teachers.find(t=>t.name===teacherName)?'teachers':'exited_teachers';
+  const {error}=await sb.from(tbl).update({base_salary:0,salary:0}).eq('id',teacher.id);
+  if(error){alert('삭제 실패: '+error.message);return;}
+  await loadAll();renderProfile(teacherName);
+}
+
+async function saveEdit(){
+  if(!_editCtx)return;
+  const {section,record,teacherName}=_editCtx;
+  const v=id=>document.getElementById(id);
+  let ud={},table='';
+  if(section==='baseSalary'){
+    const newBase=parseFloat(v('em-base-amount').value)||0;
+    const teacher=data.teachers.find(t=>t.name===_editCtx.teacherName)||data.exited.find(e=>e.name===_editCtx.teacherName);
+    if(!teacher){alert('강사를 찾을 수 없어요.');return;}
+    const tbl=data.teachers.find(t=>t.name===_editCtx.teacherName)?'teachers':'exited_teachers';
+    const {error}=await sb.from(tbl).update({base_salary:newBase}).eq('id',teacher.id);
+    if(error){alert('저장 오류: '+error.message);return;}
+    closeEditModal();await loadAll();renderProfile(_editCtx.teacherName);return;
+  } else if(section==='salary'){
+    const pt=v('em-pay-type').value,it=v('em-ins-type').value,nt=(v('em-reason').value||'').trim();
+    table='salary_history';
+    ud={amount:parseFloat(v('em-amount').value),change_date:v('em-date').value,reason:'['+pt+']['+it+']'+(nt?' '+nt:'')};
+  } else if(section==='growth'){
+    table='growth_history';
+    ud={record_date:v('em-date').value,type:v('em-type').value,content:v('em-content').value};
+  } else if(section==='interview'){
+    table='interviews';
+    ud={date:v('em-date').value,type:v('em-type').value,said:v('em-said').value,feedback:v('em-feedback').value,promise:v('em-promise').value||null,promiseDone:v('em-promise-done').checked};
+  } else if(section==='checkin'){
+    table='checkins';
+    ud={date:v('em-date').value,stage:v('em-stage').value,score:parseInt(v('em-score').value)||null,hard:v('em-hard').value||null,need:v('em-need').value||null};
+  } else if(section==='leave'){
+    table='leaves';
+    ud={leave_date:v('em-leave-date').value,days:parseFloat(v('em-leave-days').value),reason:v('em-leave-reason').value,salary_deducted:v('em-leave-deduct').value==='yes',memo:v('em-leave-memo').value||null};
+  }
+  const btn=document.getElementById('edit-save-btn');
+  if(btn)btn.textContent='저장 중...';
+  const {error}=await sb.from(table).update(ud).eq('id',record.id);
+  if(error){alert('저장 오류: '+error.message);if(btn)btn.textContent='저장';return;}
+  closeEditModal();
+  await loadAll();
+  if(section==='leave') renderLeave();
+  else renderProfile(teacherName);
+}
+</script>
+</body>
+</html>
