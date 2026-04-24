@@ -1211,7 +1211,7 @@ function renderCheckin(){
 }
 
 function renderContract(){
-  const ts=data.teachers,n=new Date();
+  const ts=data.teachers.filter(t=>t.branch!=='potential'),n=new Date();
   document.getElementById('c-thismonth').textContent=ts.filter(t=>{const d=new Date(t.end);return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}).length;
   document.getElementById('c-90days').textContent=ts.filter(t=>dU(t.end)<=90&&dU(t.end)>=0).length;
   document.getElementById('c-done').textContent=ts.filter(t=>dU(t.end)<0).length;
