@@ -913,8 +913,13 @@ function renderSubNav(){
 }
 
 // ══ HELPERS ══
-function dU(d){const n=new Date();n.setHours(0,0,0,0);return Math.round((new Date(d)-n)/864e5)}
-function moIn(d){const s=new Date(d),n=new Date();return(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())}
+function parseDate(dStr){
+  if(!dStr) return null;
+  const [y, m, d] = dStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function dU(d){const n=new Date();n.setHours(0,0,0,0);const s=parseDate(d);if(!s)return 999;return Math.round((s-n)/864e5)}
+function moIn(d){const s=parseDate(d),n=new Date();if(!s)return 0;return(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth())}
 function ini(name){return name.substring(0,2)}
 function sc(t){if(t.branch==='potential')return'safe';if(t.status==='danger')return'danger';if(t.status==='warn')return'warn';if(t.end&&dU(t.end)<=30&&dU(t.end)>=0)return'warn';return'safe'}
 function workDays(startStr){if(!startStr)return 0;const s=new Date(startStr),n=new Date();return Math.max(0,Math.floor((n-s)/864e5));}
@@ -942,10 +947,10 @@ function isSeveranceActive(t){
   return new Date(svDate)<=new Date();
 }
 function scL(t){return{danger:'위험',warn:'주의',safe:'안정'}[sc(t)]}
-function bdD(b){if(!b)return 999;const n=new Date(),d=new Date(b),nx=new Date(n.getFullYear(),d.getMonth(),d.getDate());if(nx<n)nx.setFullYear(n.getFullYear()+1);return Math.round((nx-n)/864e5)}
-function bdAge(b){if(!b)return'-';const n=new Date(),d=new Date(b);let a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;return a}
+function bdD(b){if(!b)return 999;const n=new Date();n.setHours(0,0,0,0);const d=parseDate(b);if(!d)return 999;const nx=new Date(n.getFullYear(),d.getMonth(),d.getDate());if(nx<n)nx.setFullYear(n.getFullYear()+1);return Math.round((nx-n)/864e5)}
+function bdAge(b){if(!b)return'-';const n=new Date(),d=parseDate(b);if(!d)return'-';let a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;return a}
 function getQ(n){return data.leaveQuota[n]||15}
-function getU(n){const y=new Date().getFullYear();return data.leaves.filter(l=>l.teacher===n&&new Date(l.date).getFullYear()===y).reduce((s,l)=>s+parseFloat(l.days),0)}
+function getU(n){const y=new Date().getFullYear();return data.leaves.filter(l=>l.teacher===n&&parseDate(l.date)?.getFullYear()===y).reduce((s,l)=>s+parseFloat(l.days),0)}
 function pendingPromises(){return data.interviews.filter(i=>i.promise&&i.promise.trim()&&!i.promiseDone).length}
 
 // ══ RENDER ══
@@ -1100,7 +1105,7 @@ function tCard(t){
       ${retBadge}
       ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
       ${(t.currentSalary||t.salary)?`<span>· ${(t.currentSalary||t.salary)}만</span>`:''}
-      ${t.birth?`<span>· 🎂${new Date(t.birth).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}</span>`:''}
+      ${t.birth?`<span>· 🎂${(function(){const d=parseDate(t.birth);return d?(d.getMonth()+1)+'월 '+d.getDate()+'일':''})()}</span>`:''}
     </div>`:''}
     ${t.memo?`<div style="margin:4px 0 0 44px;font-size:11px;color:var(--amber-text)">${t.memo}</div>`:''}
     <!-- 하단: 버튼 -->
