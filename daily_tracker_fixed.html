@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>일별 업무 트래커</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f0f0eb; min-height: 100vh; padding: 0 0 100px; }
+.app { max-width: 600px; margin: 0 auto; padding: 16px 14px 0; }
+
+/* 탭 */
+.tab-bar { display: flex; background: white; border-radius: 14px; padding: 5px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); gap: 4px; }
+.tab-btn { flex: 1; padding: 9px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; background: none; color: #aaa; transition: all 0.15s; }
+.tab-btn.active { background: #1a1a1a; color: white; }
+
+/* 날짜 네비 */
+.date-nav { display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.nav-btn { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #e5e5e5; background: #f9f9f7; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.nav-btn:active { background: #eee; }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.date-center { text-align: center; flex: 1; }
+.date-main { font-size: 17px; font-weight: 700; color: #1a1a1a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.date-sub { font-size: 12px; color: #aaa; margin-top: 3px; }
+.badge { font-size: 10px; color: white; border-radius: 99px; padding: 2px 8px; font-weight: 600; }
+.badge-today { background: #1D9E75; }
+.badge-past { background: #888; }
+.badge-future { background: #6366f1; }
+
+/* 달력 팝업 */
+.cal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: flex-start; justify-content: center; padding-top: 80px; }
+.cal-overlay.open { display: flex; }
+.cal-popup { background: white; border-radius: 18px; padding: 18px; width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-title { font-size: 15px; font-weight: 700; }
+.cal-nav { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #eee; background: #f9f9f9; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+.cal-day-name { text-align: center; font-size: 11px; font-weight: 600; color: #aaa; padding: 4px 0; }
+.cal-day { text-align: center; font-size: 13px; padding: 7px 2px; border-radius: 8px; cursor: pointer; position: relative; }
+.cal-day:hover { background: #f0f0eb; }
+.cal-day.today { background: #1D9E75; color: white; font-weight: 700; }
+.cal-day.selected { background: #1a1a1a; color: white; font-weight: 700; }
+.cal-day.has-data::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#1D9E75; }
+.cal-day.has-data-incomplete::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#ef4444; }
+.cal-day.today.has-data::after, .cal-day.selected.has-data::after,
+.cal-day.today.has-data-incomplete::after, .cal-day.selected.has-data-incomplete::after { background:rgba(255,255,255,0.7); }
+.cal-day.empty { cursor:default; }
+.cal-day.future { cursor:default; opacity:0.3; }
+
+/* 진행률 카드 */
+.progress-card { background: white; border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.prog-ring { transform: rotate(-90deg); }
+.prog-ring-bg { fill: none; stroke: #f0f0eb; stroke-width: 7; }
+.prog-ring-fill { fill: none; stroke: #1D9E75; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.prog-info { flex: 1; }
+.prog-pct { font-size: 32px; font-weight: 800; color: #1a1a1a; line-height: 1; }
+.prog-label { font-size: 12px; color: #aaa; margin-top: 3px; }
+.prog-bar-bg { height: 6px; background: #f0f0eb; border-radius: 99px; margin-top: 12px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 99px; background: #1D9E75; transition: width 0.4s ease; }
+.prog-stats { display: flex; gap: 14px; margin-top: 10px; }
+.prog-stat-n { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+.prog-stat-l { font-size: 11px; color: #aaa; }
+
+/* 동기부여 */
+.motivation { text-align: center; font-size: 13px; color: #666; padding: 11px; border-radius: 12px; background: white; margin-bottom: 12px; font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+
+
+/* 업무 추가 */
+.add-box { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.add-box-title { font-size: 12px; font-weight: 700; color: #aaa; margin-bottom: 10px; }
+.add-input { width: 100%; border: 1.5px solid #e5e5e5; border-radius: 10px; padding: 10px 13px; font-size: 14px; font-family: inherit; color: #1a1a1a; background: #fafafa; outline: none; margin-bottom: 8px; }
+.add-input:focus { border-color: #1D9E75; background: white; }
+.cat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.cat-btn { padding: 6px 12px; border-radius: 99px; border: 1.5px solid #e5e5e5; background: #f9f9f7; font-size: 12px; font-family: inherit; color: #666; cursor: pointer; }
+.cat-btn.active { background: #1a1a1a; border-color: #1a1a1a; color: white; }
+.subcat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; min-height: 0; }
+.subcat-btn { padding: 5px 10px; border-radius: 99px; border: 1.5px solid #e5e5e5; background: #f9f9f7; font-size: 11px; font-family: inherit; color: #666; cursor: pointer; }
+.subcat-btn.active { border-color: #1D9E75; background: #e8f5e9; color: #1D9E75; }
+.repeat-label { font-size: 11px; font-weight: 600; color: #bbb; margin-bottom: 7px; }
+.repeat-btns { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+.repeat-btn { padding: 5px 10px; border-radius: 99px; border: 1.5px solid #e5e5e5; background: #f9f9f7; font-size: 11px; font-family: inherit; color: #666; cursor: pointer; }
+.repeat-btn.active { background: #6366f1; border-color: #6366f1; color: white; }
+.weekday-row { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+.weekday-btn { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #e5e5e5; background: #f9f9f7; font-size: 12px; font-family: inherit; color: #666; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.weekday-btn.active { background: #6366f1; border-color: #6366f1; color: white; }
+.monthly-input { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.monthly-num { width: 60px; border: 1.5px solid #e5e5e5; border-radius: 8px; padding: 6px 10px; font-size: 13px; font-family: inherit; text-align: center; }
+.add-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #1D9E75; color: white; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.add-btn:active { background: #178a64; }
+
+/* 섹션 */
+.section { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.section-count { font-size: 12px; color: #aaa; font-weight: 500; margin-left: 6px; }
+.empty-msg { text-align: center; color: #ccc; font-size: 13px; padding: 20px 0; }
+
+/* 업무 카드 */
+.task-item { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid #f5f5f0; transition: opacity 0.15s; }
+.task-item:last-child { border-bottom: none; padding-bottom: 0; }
+.task-item.dragging { opacity: 0.4; }
+.task-item.drag-over { border-top: 2px solid #1D9E75; }
+.drag-handle { cursor: grab; color: #ccc; font-size: 16px; padding: 4px 2px; flex-shrink: 0; touch-action: none; user-select: none; }
+.drag-handle:active { cursor: grabbing; color: #999; }
+.task-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #ddd; background: white; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.task-check.done { background: #1D9E75; border-color: #1D9E75; color: white; }
+.task-body { flex: 1; min-width: 0; }
+.task-name { font-size: 14px; color: #1a1a1a; line-height: 1.4; word-break: break-all; }
+.task-name.done { text-decoration: line-through; color: #bbb; }
+.task-meta { display: flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+.task-cat { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
+.cat-학원업무 { background: #e8f5e9; color: #2e7d32; }
+.cat-건강 { background: #fce4ec; color: #c2185b; }
+.cat-자기개발 { background: #ede7f6; color: #6a1b9a; }
+.cat-집안일 { background: #fff8e1; color: #e65100; }
+.cat-기타 { background: #f5f5f5; color: #616161; }
+.cat-이벤트 { background: #fce4ff; color: #8b00b5; }
+.task-repeat { font-size: 10px; padding: 2px 7px; border-radius: 99px; background: #eef2ff; color: #6366f1; font-weight: 600; }
+.task-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.task-action-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.task-edit-btn { background: #f0f0eb; color: #666; }
+.task-del-btn { background: #fef2f2; color: #ef4444; }
+.task-edit-row { padding: 10px 0; border-bottom: 1px solid #f5f5f0; }
+.task-edit-row:last-child { border-bottom: none; }
+.task-edit-input { width: 100%; border: 1.5px solid #1D9E75; border-radius: 10px; padding: 9px 12px; font-size: 14px; font-family: inherit; color: #1a1a1a; background: white; outline: none; margin-bottom: 8px; }
+.task-edit-memo { width: 100%; border: 1.5px solid #e5e5e5; border-radius: 10px; padding: 9px 12px; font-size: 13px; font-family: inherit; color: #555; background: #fafafa; outline: none; margin-bottom: 8px; resize: none; min-height: 64px; }
+.task-edit-memo:focus { border-color: #1D9E75; background: white; }
+.task-memo-display { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+.task-edit-cats { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+.task-edit-save { padding: 7px 16px; border-radius: 8px; border: none; background: #1D9E75; color: white; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; margin-right: 6px; }
+.task-edit-cancel { padding: 7px 14px; border-radius: 8px; border: 1.5px solid #e5e5e5; background: white; color: #666; font-size: 13px; font-family: inherit; cursor: pointer; }
+
+/* 반복업무 관리 */
+.manage-btn { width: 100%; padding: 13px; border-radius: 14px; border: none; background: white; color: #666; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; }
+.manage-section { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: none; }
+.manage-section.open { display: block; }
+.manage-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f0; }
+.manage-item:last-child { border-bottom: none; }
+.manage-name { font-size: 14px; color: #1a1a1a; }
+.manage-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+.manage-del { width: 30px; height: 30px; border-radius: 8px; border: none; background: #fef2f2; color: #ef4444; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* 리포트 */
+.report-period-btns { display: flex; gap: 6px; margin-bottom: 14px; }
+.period-btn { flex: 1; padding: 8px; border-radius: 10px; border: 1.5px solid #e5e5e5; background: white; font-size: 12px; font-weight: 600; font-family: inherit; color: #aaa; cursor: pointer; }
+.period-btn.active { background: #1a1a1a; border-color: #1a1a1a; color: white; }
+.report-summary { background: white; border-radius: 16px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.report-streak { font-size: 28px; font-weight: 800; color: #1a1a1a; }
+.report-streak-label { font-size: 12px; color: #aaa; margin-top: 2px; margin-bottom: 14px; }
+.streak-msg { font-size: 13px; color: #1D9E75; font-weight: 600; margin-top: 4px; }
+.report-stat-row { display: flex; gap: 10px; }
+.report-stat { flex: 1; background: #f9f9f7; border-radius: 12px; padding: 12px; text-align: center; }
+.report-stat-num { font-size: 20px; font-weight: 800; color: #1a1a1a; }
+.report-stat-lbl { font-size: 11px; color: #aaa; margin-top: 2px; }
+.chart-card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.chart-title { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
+.week-bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; }
+.week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.week-bar-bg { flex: 1; width: 100%; background: #f0f0eb; border-radius: 6px; display: flex; align-items: flex-end; overflow: hidden; }
+.week-bar-fill { width: 100%; border-radius: 6px; background: #1D9E75; transition: height 0.4s ease; }
+.week-bar-label { font-size: 10px; color: #aaa; }
+.week-bar-pct { font-size: 10px; color: #1D9E75; font-weight: 700; min-height: 14px; }
+.heatmap-legend { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-top: 8px; }
+.hm-cell { aspect-ratio: 1; border-radius: 4px; }
+.hm-0 { background: #f0f0eb; }
+.hm-1 { background: #9FE1CB; }
+.hm-2 { background: #1D9E75; }
+.hm-3 { background: #0F6E56; }
+.cat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cat-bar-label { font-size: 12px; color: #444; min-width: 60px; font-weight: 600; }
+.cat-bar-bg { flex: 1; height: 8px; background: #f0f0eb; border-radius: 99px; overflow: hidden; }
+.cat-bar-fill { height: 100%; border-radius: 99px; }
+.cat-bar-count { font-size: 12px; color: #aaa; min-width: 28px; text-align: right; }
+.subcat-section { margin-top: 4px; padding: 10px 12px; background: #fafaf8; border-radius: 10px; margin-bottom: 10px; }
+.subcat-title { font-size: 11px; font-weight: 700; color: #888; margin-bottom: 8px; }
+.subcat-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.subcat-bar-label { font-size: 11px; color: #888; min-width: 60px; }
+.subcat-bar-bg { flex: 1; height: 6px; background: #e8e8e4; border-radius: 99px; overflow: hidden; }
+.subcat-bar-fill { height: 100%; border-radius: 99px; }
+.subcat-bar-count { font-size: 11px; color: #bbb; min-width: 24px; text-align: right; }
+.insight-card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.insight-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f0; font-size: 13px; color: #444; line-height: 1.5; }
+.insight-item:last-child { border-bottom: none; }
+.insight-icon { font-size: 16px; flex-shrink: 0; }
+
+/* 타임라인 */
+.timeline-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+.timeline-title { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
+.timeline-wrap { position: relative; padding-left: 52px; }
+.timeline-hour-line { position: relative; height: 44px; display: flex; align-items: flex-start; }
+.timeline-hour-label { position: absolute; left: -52px; width: 44px; text-align: right; font-size: 11px; color: #bbb; top: -6px; }
+.timeline-hour-tick { position: absolute; left: 0; right: 0; top: 0; border-top: 1px solid #f0f0eb; }
+.timeline-block { position: absolute; left: 6px; right: 0; border-radius: 8px; padding: 4px 8px; font-size: 11px; color: white; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.timeline-no-data { text-align: center; color: #ccc; font-size: 13px; padding: 20px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-today" onclick="switchTab('today')">📋 오늘</button>
+    <button class="tab-btn" id="tab-report" onclick="switchTab('report')">📊 리포트</button>
+  </div>
+
+  <!-- 오늘 탭 -->
+  <div id="today-tab">
+    <div class="date-nav">
+      <button class="nav-btn" id="prev-btn" onclick="moveDate(-1)">&#8249;</button>
+      <div class="date-center">
+        <div class="date-main" onclick="openCal()">
+          <span id="date-display"></span>
+          <span id="date-badge" class="badge"></span>
+        </div>
+        <div class="date-sub" id="date-day"></div>
+      </div>
+      <button class="nav-btn" id="next-btn" onclick="moveDate(1)">&#8250;</button>
+    </div>
+
+    <div class="cal-overlay" id="cal-overlay" onclick="closeCal(event)">
+      <div class="cal-popup">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="calMove(-1)">&#8249;</button>
+          <div class="cal-title" id="cal-title"></div>
+          <button class="cal-nav" onclick="calMove(1)">&#8250;</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <svg class="prog-ring" width="72" height="72" viewBox="0 0 72 72">
+        <circle class="prog-ring-bg" cx="36" cy="36" r="29"/>
+        <circle class="prog-ring-fill" id="ring-circle" cx="36" cy="36" r="29" stroke-dasharray="182.2" stroke-dashoffset="182.2"/>
+      </svg>
+      <div class="prog-info">
+        <div class="prog-pct" id="pct-big">0%</div>
+        <div class="prog-label" id="pct-label">업무를 추가해보세요</div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar" style="width:0%"></div></div>
+        <div class="prog-stats">
+          <div><div class="prog-stat-n" id="s-total">0</div><div class="prog-stat-l">전체</div></div>
+          <div><div class="prog-stat-n" id="s-done">0</div><div class="prog-stat-l">완료</div></div>
+          <div><div class="prog-stat-n" id="s-left">0</div><div class="prog-stat-l">남은</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="motivation" id="motivation"></div>
+
+    <div class="add-box">
+      <div class="add-box-title">➕ 업무 추가</div>
+      <input class="add-input" id="task-input" type="text" placeholder="업무 내용 입력" onkeydown="if(event.key==='Enter')addTask()">
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+          <span style="font-size:12px;color:#aaa;white-space:nowrap;">🕐 시작</span>
+          <input class="add-input" id="time-start" type="time" style="margin-bottom:0;flex:1;">
+        </div>
+        <span style="color:#aaa;font-size:13px;">~</span>
+        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+          <span style="font-size:12px;color:#aaa;white-space:nowrap;">종료</span>
+          <input class="add-input" id="time-end" type="time" style="margin-bottom:0;flex:1;">
+        </div>
+      </div>
+      <div class="cat-row" id="cat-row">
+        <button class="cat-btn active" onclick="selectCat(this,'학원업무')">🏫 학원업무</button>
+        <button class="cat-btn" onclick="selectCat(this,'건강')">💪 건강</button>
+        <button class="cat-btn" onclick="selectCat(this,'자기개발')">📚 자기개발</button>
+        <button class="cat-btn" onclick="selectCat(this,'집안일')">🏠 집안일</button>
+        <button class="cat-btn" onclick="selectCat(this,'이벤트')">🎉 이벤트</button>
+        <button class="cat-btn" onclick="selectCat(this,'기타')">📌 기타</button>
+      </div>
+      <div class="subcat-row" id="subcat-row"></div>
+      <div class="repeat-label">🔁 반복</div>
+      <div class="repeat-btns">
+        <button class="repeat-btn active" onclick="selectRepeat(this,'none')">없음</button>
+        <button class="repeat-btn" onclick="selectRepeat(this,'daily')">매일</button>
+        <button class="repeat-btn" onclick="selectRepeat(this,'weekly')">매주</button>
+        <button class="repeat-btn" onclick="selectRepeat(this,'monthly-custom')">매달 O일</button>
+        <button class="repeat-btn" onclick="selectRepeat(this,'monthly-last')">매달 말일</button>
+        <button class="repeat-btn" onclick="selectRepeat(this,'yearly')">매년</button>
+      </div>
+      <div class="weekday-row" id="weekday-row" style="display:none">
+        <button class="weekday-btn" onclick="toggleDay(this,0)">일</button>
+        <button class="weekday-btn" onclick="toggleDay(this,1)">월</button>
+        <button class="weekday-btn" onclick="toggleDay(this,2)">화</button>
+        <button class="weekday-btn" onclick="toggleDay(this,3)">수</button>
+        <button class="weekday-btn" onclick="toggleDay(this,4)">목</button>
+        <button class="weekday-btn" onclick="toggleDay(this,5)">금</button>
+        <button class="weekday-btn" onclick="toggleDay(this,6)">토</button>
+      </div>
+      <div class="monthly-input" id="monthly-input" style="display:none">
+        <input class="monthly-num" id="monthly-day" type="number" min="1" max="31" placeholder="일">
+        <span style="font-size:13px;color:#888;">일마다</span>
+      </div>
+      <div class="monthly-input" id="yearly-input" style="display:none">
+        <input class="monthly-num" id="yearly-month" type="number" min="1" max="12" placeholder="월">
+        <span style="font-size:13px;color:#888;">월</span>
+        <input class="monthly-num" id="yearly-day" type="number" min="1" max="31" placeholder="일">
+        <span style="font-size:13px;color:#888;">일마다</span>
+      </div>
+      <button class="add-btn" onclick="addTask()">추가하기</button>
+    </div>
+
+    <div class="timeline-card">
+      <div class="timeline-title">🕐 오늘 타임라인</div>
+      <div id="timeline-wrap"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📋 진행 중 <span class="section-count" id="todo-count"></span></div>
+      </div>
+      <div id="todo-list"></div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">✅ 완료 <span class="section-count" id="done-count"></span></div>
+      </div>
+      <div id="done-list"></div>
+    </div>
+
+    <button class="manage-btn" onclick="toggleManage()">🔁 반복 업무 관리 <span id="manage-arrow">▼</span></button>
+    <div class="manage-section" id="manage-panel"><div id="manage-list"></div></div>
+  </div>
+
+  <!-- 리포트 탭 -->
+  <div id="report-tab" style="display:none">
+    <div class="report-period-btns">
+      <button class="period-btn active" onclick="selectPeriod(this,'week')">이번 주</button>
+      <button class="period-btn" onclick="selectPeriod(this,'month')">이번 달</button>
+      <button class="period-btn" onclick="selectPeriod(this,'all')">전체</button>
+    </div>
+    <div class="report-summary">
+      <div class="report-streak" id="rp-streak">0일</div>
+      <div class="report-streak-label">연속 달성 🔥</div>
+      <div class="streak-msg" id="streak-msg"></div>
+      <div class="report-stat-row" style="margin-top:14px">
+        <div class="report-stat"><div class="report-stat-num" id="rp-avg">0%</div><div class="report-stat-lbl">평균 달성률</div></div>
+        <div class="report-stat"><div class="report-stat-num" id="rp-perfect">0일</div><div class="report-stat-lbl">100% 완료일</div></div>
+        <div class="report-stat"><div class="report-stat-num" id="rp-total-done">0개</div><div class="report-stat-lbl">완료한 업무</div></div>
+      </div>
+    </div>
+    <div class="chart-card" id="week-chart-wrap">
+      <div class="chart-title">일별 달성률</div>
+      <div class="week-bars" id="week-bars"></div>
+    </div>
+    <div class="chart-card" id="heatmap-wrap" style="display:none">
+      <div class="chart-title" id="heatmap-title">달성 현황</div>
+      <div class="heatmap-legend">
+        <span style="font-size:11px;color:#bbb">낮음</span>
+        <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#f0f0eb"></span>
+        <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#9FE1CB"></span>
+        <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#1D9E75"></span>
+        <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#0F6E56"></span>
+        <span style="font-size:11px;color:#bbb">높음</span>
+      </div>
+      <div class="heatmap-grid" id="heatmap-grid"></div>
+    </div>
+    <div class="chart-card" id="time-chart-wrap">
+      <div class="chart-title">⏱ 카테고리별 투입 시간</div>
+      <div id="time-chart"></div>
+    </div>
+    <div class="insight-card">
+      <div class="chart-title" style="margin-bottom:8px">인사이트</div>
+      <div id="insights"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS_KO = ['일','월','화','수','목','금','토'];
+const MONTHS_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const SUB_CATS = {
+  '학원업무': ['노무','세무','마케팅'],
+  '건강': ['운동','수면','식단','영양제·약'],
+  '자기개발': ['AI','독서','페인팅','성경읽기'],
+  '집안일': ['청소','빨래','장보기','유지보수'],
+  '이벤트': ['생일','기념일','명절','약속'],
+  '기타': []
+};
+const CAT_COLORS = {
+  '학원업무': '#1D9E75', '건강': '#e91e63', '자기개발': '#7c3aed', '집안일': '#f59e0b', '이벤트': '#8b00b5', '기타': '#9ca3af'
+};
+
+let currentDate = todayStr();
+let calViewYear = 0, calViewMonth = 0;
+let selectedCat = '학원업무', selectedSubCat = '', selectedRepeat = 'none', selectedDays = [];
+let editingId = null, reportPeriod = 'week';
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function isToday(ds) { return ds===todayStr(); }
+function parseDate(ds) {
+  const [y,m,d] = ds.split('-').map(Number);
+  return {y,m,d,dow:new Date(ds+'T00:00:00').getDay()};
+}
+function lastDay(y,m) { return new Date(y,m,0).getDate(); }
+function dsFromYMD(y,m,d) { return y+'-'+pad(m)+'-'+pad(d); }
+
+function loadTasks(ds) { try { return JSON.parse(localStorage.getItem('tasks_'+ds)||'[]'); } catch(e) { return []; } }
+function saveTasks(ds,list) { if(!list.length) localStorage.removeItem('tasks_'+ds); else localStorage.setItem('tasks_'+ds,JSON.stringify(list)); }
+function loadRepeats() { try { return JSON.parse(localStorage.getItem('repeats')||'[]'); } catch(e) { return []; } }
+function saveRepeats(list) { localStorage.setItem('repeats',JSON.stringify(list)); }
+function getAllDateKeys() {
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('tasks_'))keys.push(k.replace('tasks_',''));}
+  return keys.sort().reverse();
+}
+
+function getRepeatTasksForDate(ds) {
+  const {y,m,d,dow}=parseDate(ds);
+  return loadRepeats().filter(function(r){
+    if(r.repeat==='daily') return true;
+    if(r.repeat==='weekly') return r.days&&r.days.indexOf(dow)!==-1;
+    if(r.repeat==='monthly-custom') return d===r.monthDay;
+    if(r.repeat==='monthly-last') return d===lastDay(y,m);
+    if(r.repeat==='yearly') return m===r.yearMonth && d===r.yearDay;
+    return false;
+  });
+}
+function getTasksForDate(ds) {
+  const saved=loadTasks(ds);
+  const repeats=getRepeatTasksForDate(ds);
+  const existingRids=saved.filter(function(t){return t.rid;}).map(function(t){return t.rid;});
+  const toInject=repeats.filter(function(r){return existingRids.indexOf(r.id)===-1;});
+  if(toInject.length){
+    const injected=toInject.map(function(r){return {id:String(Date.now())+String(Math.floor(Math.random()*10000)),name:r.name,cat:r.cat,subCat:r.subCat||'',timeStart:r.timeStart||'',timeEnd:r.timeEnd||'',done:false,rid:r.id};});
+    const merged=injected.concat(saved);
+    saveTasks(ds,merged);
+    return merged;
+  }
+  return saved;
+}
+
+function switchTab(tab) {
+  document.getElementById('today-tab').style.display=tab==='today'?'block':'none';
+  document.getElementById('report-tab').style.display=tab==='report'?'block':'none';
+  document.getElementById('tab-today').classList.toggle('active',tab==='today');
+  document.getElementById('tab-report').classList.toggle('active',tab==='report');
+  if(tab==='report') renderReport();
+}
+
+function moveDate(dir) {
+  const d=new Date(currentDate+'T00:00:00');
+  d.setDate(d.getDate()+dir);
+  currentDate=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  render();
+}
+function jumpTo(ds) { currentDate=ds; render(); document.getElementById('cal-overlay').classList.remove('open'); }
+
+function openCal() {
+  const {y,m}=parseDate(currentDate);
+  calViewYear=y; calViewMonth=m-1; renderCal();
+  document.getElementById('cal-overlay').classList.add('open');
+}
+function closeCal(e) { if(!e||e.target===document.getElementById('cal-overlay')) document.getElementById('cal-overlay').classList.remove('open'); }
+function calMove(dir) {
+  calViewMonth+=dir;
+  if(calViewMonth<0){calViewMonth=11;calViewYear--;}
+  if(calViewMonth>11){calViewMonth=0;calViewYear++;}
+  renderCal();
+}
+function renderCal() {
+  const today=todayStr(), allKeys=getAllDateKeys();
+  document.getElementById('cal-title').textContent=calViewYear+'년 '+MONTHS_KO[calViewMonth];
+  const firstDow=new Date(calViewYear,calViewMonth,1).getDay();
+  const dim=new Date(calViewYear,calViewMonth+1,0).getDate();
+  let html=DAYS_KO.map(function(d){return '<div class="cal-day-name">'+d+'</div>';}).join('');
+  for(let i=0;i<firstDow;i++) html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=dsFromYMD(calViewYear,calViewMonth+1,d);
+    let dotCls='';
+    if(allKeys.indexOf(ds)!==-1){
+      const t=loadTasks(ds);
+      if(t.length){
+        dotCls=t.every(function(x){return x.done;})?' has-data':' has-data-incomplete';
+      }
+    }
+    let cls='cal-day'+(ds===today?' today':'')+(ds===currentDate?' selected':'')+dotCls;
+    const click='onclick="jumpTo(\''+ds+'\')"';
+    html+='<div class="'+cls+'" '+click+'>'+d+'</div>';
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
+function selectCat(btn,cat) {
+  selectedCat=cat; selectedSubCat='';
+  document.querySelectorAll('#cat-row .cat-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active'); renderSubCats();
+}
+function renderSubCats() {
+  const row=document.getElementById('subcat-row');
+  const subs=SUB_CATS[selectedCat]||[];
+  if(!subs.length){row.innerHTML='';return;}
+  row.innerHTML=subs.map(function(s){
+    return '<button class="subcat-btn'+(selectedSubCat===s?' active':'')+'" onclick="selectSubCat(this,\''+s+'\')">'+s+'</button>';
+  }).join('');
+}
+function selectSubCat(btn,sub) {
+  selectedSubCat=sub;
+  document.querySelectorAll('#subcat-row .subcat-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function selectRepeat(btn,val) {
+  selectedRepeat=val;
+  document.querySelectorAll('.repeat-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('weekday-row').style.display=val==='weekly'?'flex':'none';
+  document.getElementById('monthly-input').style.display=val==='monthly-custom'?'flex':'none';
+  document.getElementById('yearly-input').style.display=val==='yearly'?'flex':'none';
+}
+function toggleDay(btn,dow) {
+  btn.classList.toggle('active');
+  if(btn.classList.contains('active')){if(selectedDays.indexOf(dow)===-1)selectedDays.push(dow);}
+  else{selectedDays=selectedDays.filter(function(d){return d!==dow;});}
+}
+
+function addTask() {
+  const input=document.getElementById('task-input');
+  const name=input.value.trim();
+  if(!name) return;
+  const timeStart=document.getElementById('time-start').value;
+  const timeEnd=document.getElementById('time-end').value;
+  if(selectedRepeat!=='none'){
+    const repeats=loadRepeats();
+    const r={id:String(Date.now())+String(Math.floor(Math.random()*10000)),name:name,cat:selectedCat,subCat:selectedSubCat,timeStart:timeStart,timeEnd:timeEnd,repeat:selectedRepeat};
+    if(selectedRepeat==='weekly') r.days=selectedDays.slice();
+    if(selectedRepeat==='monthly-custom'){
+      const md=parseInt(document.getElementById('monthly-day').value);
+      if(!md||md<1||md>31){alert('날짜를 입력해주세요 (1~31)');return;}
+      r.monthDay=md;
+    }
+    if(selectedRepeat==='yearly'){
+      const ym=parseInt(document.getElementById('yearly-month').value);
+      const yd=parseInt(document.getElementById('yearly-day').value);
+      if(!ym||ym<1||ym>12){alert('월을 입력해주세요 (1~12)');return;}
+      if(!yd||yd<1||yd>31){alert('일을 입력해주세요 (1~31)');return;}
+      r.yearMonth=ym; r.yearDay=yd;
+    }
+    repeats.push(r); saveRepeats(repeats);
+    // 반복업무는 오늘 날짜에도 자동 주입되므로 별도 일반업무 추가 안 함
+    input.value='';
+    document.getElementById('time-start').value='';
+    document.getElementById('time-end').value='';
+    render();
+    return;
+  }
+  const tasks=getTasksForDate(currentDate);
+  tasks.unshift({id:String(Date.now())+String(Math.floor(Math.random()*10000)),name:name,cat:selectedCat,subCat:selectedSubCat,timeStart:timeStart,timeEnd:timeEnd,done:false});
+  saveTasks(currentDate,tasks);
+  input.value='';
+  document.getElementById('time-start').value='';
+  document.getElementById('time-end').value='';
+  render();
+}
+
+function toggleDone(id) { id=String(id);
+  const tasks=loadTasks(currentDate);
+  const t=tasks.find(function(t){return String(t.id)===String(id);});
+  if(t) t.done=!t.done;
+  saveTasks(currentDate,tasks); render();
+}
+function deleteTask(id) { id=String(id); saveTasks(currentDate,loadTasks(currentDate).filter(function(t){return String(t.id)!==String(id);})); render(); }
+function startEdit(id) { editingId=String(id); render(); setTimeout(function(){const el=document.getElementById('edit-input-'+id);if(el)el.focus();},50); }
+function cancelEdit() { editingId=null; render(); }
+function saveEdit(id) { id=String(id);
+  const input=document.getElementById('edit-input-'+id);
+  const name=input?input.value.trim():'';
+  if(!name) return;
+  const tasks=loadTasks(currentDate);
+  const t=tasks.find(function(t){return String(t.id)===String(id);});
+  if(t){
+    t.name=name;
+    const activeCat=document.querySelector('.edit-cat-'+id+'.active');
+    if(activeCat) t.cat=activeCat.dataset.cat;
+    const memoEl=document.getElementById('edit-memo-'+id);
+    if(memoEl) t.memo=memoEl.value.trim();
+  }
+  saveTasks(currentDate,tasks); editingId=null; render();
+}
+function selectEditCat(btn,id) {
+  document.querySelectorAll('.edit-cat-'+id).forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function toggleManage() {
+  const p=document.getElementById('manage-panel'),a=document.getElementById('manage-arrow');
+  p.classList.toggle('open'); a.textContent=p.classList.contains('open')?'▲':'▼';
+  if(p.classList.contains('open')) renderManage();
+}
+function deleteRepeat(id) { saveRepeats(loadRepeats().filter(function(r){return String(r.id)!==String(id);})); renderManage(); }
+
+function repeatLabel(r) {
+  if(!r) return '';
+  if(r.repeat==='daily') return '매일';
+  if(r.repeat==='weekly') return '매주 '+(r.days||[]).map(function(d){return DAYS_KO[d];}).join('·');
+  if(r.repeat==='monthly-custom') return '매달 '+r.monthDay+'일';
+  if(r.repeat==='monthly-last') return '매달 말일';
+  if(r.repeat==='yearly') return '매년 '+r.yearMonth+'월 '+r.yearDay+'일';
+  return '';
+}
+
+let editingRepeatId = null;
+
+function startEditRepeat(id) { editingRepeatId = String(id); renderManage(); }
+function cancelEditRepeat() { editingRepeatId = null; renderManage(); }
+function saveEditRepeat(id) {
+  const nameEl = document.getElementById('rep-edit-name-'+id);
+  const name = nameEl ? nameEl.value.trim() : '';
+  if(!name) return;
+  const repeats = loadRepeats();
+  const r = repeats.find(function(r){ return String(r.id)===String(id); });
+  if(r) {
+    r.name = name;
+    const activeCat = document.querySelector('.rep-edit-cat-'+id+'.active');
+    if(activeCat) r.cat = activeCat.dataset.cat;
+    const activeSub = document.querySelector('.rep-edit-sub-'+id+'.active');
+    r.subCat = activeSub ? activeSub.dataset.sub : '';
+    const tsEl = document.getElementById('rep-edit-ts-'+id);
+    const teEl = document.getElementById('rep-edit-te-'+id);
+    if(tsEl) r.timeStart = tsEl.value;
+    if(teEl) r.timeEnd = teEl.value;
+  }
+  saveRepeats(repeats);
+  editingRepeatId = null;
+  renderManage();
+}
+function selectRepEditCat(btn, id) {
+  document.querySelectorAll('.rep-edit-cat-'+id).forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  // 소분류 리렌더
+  const cat = btn.dataset.cat;
+  const subs = SUB_CATS[cat]||[];
+  const subRow = document.getElementById('rep-edit-subrow-'+id);
+  if(subRow) subRow.innerHTML = subs.map(function(s){
+    return '<button class="subcat-btn rep-edit-sub-'+id+'" data-sub="'+s+'" onclick="selectRepEditSub(this,\''+id+'\')">'+s+'</button>';
+  }).join('');
+}
+function selectRepEditSub(btn, id) {
+  document.querySelectorAll('.rep-edit-sub-'+id).forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function renderManage() {
+  const repeats=loadRepeats(), list=document.getElementById('manage-list');
+  if(!repeats.length){list.innerHTML='<div class="empty-msg">등록된 반복 업무가 없어요</div>';return;}
+  list.innerHTML=repeats.map(function(r){
+    const rid = String(r.id);
+    if(editingRepeatId === rid) {
+      const cats = Object.keys(SUB_CATS);
+      const catBtns = cats.map(function(c){
+        return '<button class="cat-btn rep-edit-cat-'+rid+(r.cat===c?' active':'')+'" data-cat="'+c+'" onclick="selectRepEditCat(this,\''+rid+'\')" style="font-size:11px;padding:4px 9px;">'+c+'</button>';
+      }).join('');
+      const subs = SUB_CATS[r.cat]||[];
+      const subBtns = subs.map(function(s){
+        return '<button class="subcat-btn rep-edit-sub-'+rid+(r.subCat===s?' active':'')+'" data-sub="'+s+'" onclick="selectRepEditSub(this,\''+rid+'\')">'+s+'</button>';
+      }).join('');
+      return '<div class="task-edit-row">'
+        +'<input class="task-edit-input" id="rep-edit-name-'+rid+'" value="'+r.name.replace(/"/g,'&quot;')+'">'
+        +'<div class="task-edit-cats">'+catBtns+'</div>'
+        +'<div id="rep-edit-subrow-'+rid+'" class="subcat-row" style="margin-bottom:8px;">'+subBtns+'</div>'
+        +'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">'
+          +'<span style="font-size:12px;color:#aaa;">🕐 시작</span>'
+          +'<input type="time" id="rep-edit-ts-'+rid+'" value="'+(r.timeStart||'')+'" class="add-input" style="margin-bottom:0;flex:1;">'
+          +'<span style="color:#aaa;">~</span>'
+          +'<input type="time" id="rep-edit-te-'+rid+'" value="'+(r.timeEnd||'')+'" class="add-input" style="margin-bottom:0;flex:1;">'
+        +'</div>'
+        +'<button class="task-edit-save" onclick="saveEditRepeat(\''+rid+'\')">저장</button>'
+        +'<button class="task-edit-cancel" onclick="cancelEditRepeat()">취소</button>'
+        +'</div>';
+    }
+    return '<div class="manage-item">'
+      +'<div><div class="manage-name">'+r.name+'</div>'
+      +'<div class="manage-sub">'+repeatLabel(r)+' · '+r.cat+(r.subCat?' · '+r.subCat:'')+(r.timeStart?' · 🕐'+r.timeStart+(r.timeEnd?'~'+r.timeEnd:''):'')+'</div></div>'
+      +'<div style="display:flex;gap:5px;">'
+        +'<button class="task-action-btn task-edit-btn" onclick="startEditRepeat(\''+rid+'\')">✏️</button>'
+        +'<button class="manage-del" onclick="deleteRepeat(\''+rid+'\')">×</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function getMotivation(pct,total) {
+  if(!total) return '✨ 오늘 할 일을 추가해보세요!';
+  if(pct===100) return '🎉 모든 업무 완료! 오늘도 수고했어요!';
+  if(pct>=80) return '💪 거의 다 왔어요! 조금만 더!';
+  if(pct>=50) return '🔥 절반 이상 완료! 좋은 흐름이에요!';
+  if(pct>=20) return '🚀 잘 하고 있어요! 계속 달려봐요!';
+  return '☀️ 오늘 하루도 파이팅!';
+}
+
+function renderList(containerId,tasks) {
+  const el=document.getElementById(containerId);
+  if(!tasks.length){el.innerHTML='<div class="empty-msg">없음</div>';return;}
+  const repeats=loadRepeats();
+  el.innerHTML=tasks.map(function(t){
+    if(String(editingId)===String(t.id)){
+      const cats=Object.keys(SUB_CATS);
+      const catBtns=cats.map(function(c){
+        return '<button class="cat-btn edit-cat-'+t.id+(t.cat===c?' active':'')+'" data-cat="'+c+'" onclick="selectEditCat(this,\''+t.id+'\')" style="font-size:11px;padding:4px 9px;">'+c+'</button>';
+      }).join('');
+      return '<div class="task-edit-row">'
+        +'<input class="task-edit-input" id="edit-input-'+t.id+'" value="'+t.name.replace(/"/g,'&quot;')+'" onkeydown="if(event.key===\'Enter\')saveEdit(\''+t.id+'\')">'
+        +'<div class="task-edit-cats">'+catBtns+'</div>'
+        +'<textarea class="task-edit-memo" id="edit-memo-'+t.id+'" placeholder="📝 메모 (선택사항)">'+(t.memo||'')+'</textarea>'
+        +'<button class="task-edit-save" onclick="saveEdit(\''+t.id+'\')">저장</button>'
+        +'<button class="task-edit-cancel" onclick="cancelEdit()">취소</button>'
+        +'</div>';
+    }
+    const r=t.rid?repeats.find(function(r){return r.id===t.rid;}):null;
+    const rl=r?repeatLabel(r):'';
+    const label=t.cat+(t.subCat?' · '+t.subCat:'');
+    const isTodo = containerId === 'todo-list';
+    return '<div class="task-item" data-id="'+t.id+'">'
+      +(isTodo?'<div class="drag-handle">⠿</div>':'')
+      +'<button class="task-check'+(t.done?' done':'')+'" onclick="toggleDone(\''+t.id+'\')">'+(t.done?'✓':'')+'</button>'
+      +'<div class="task-body">'
+        +'<div class="task-name'+(t.done?' done':'')+'">'+t.name+'</div>'
+        +'<div class="task-meta"><span class="task-cat cat-'+t.cat+'">'+label+'</span>'+(rl?'<span class="task-repeat">🔁 '+rl+'</span>':'')+(t.timeStart?'<span style="font-size:10px;color:#aaa;">🕐 '+t.timeStart+(t.timeEnd?' ~ '+t.timeEnd:'')+'</span>':'')+'</div>'
+        +(t.memo?'<div class="task-memo-display">📝 '+t.memo+'</div>':'')
+      +'</div>'
+      +'<div class="task-actions">'
+        +'<button class="task-action-btn task-edit-btn" onclick="startEdit(\''+t.id+'\')" >✏️</button>'
+        +'<button class="task-action-btn task-del-btn" onclick="deleteTask(\''+t.id+'\')" >🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ── 드래그 앤 드롭 (터치 + 마우스) ──
+var dragSrcId = null, touchDragEl = null, touchClone = null, touchOffX = 0, touchOffY = 0;
+
+function initDrag(containerId) {
+  var el = document.getElementById(containerId);
+  if(!el) return;
+  var items = el.querySelectorAll('.task-item');
+  items.forEach(function(item) {
+    var handle = item.querySelector('.drag-handle');
+    if(!handle) return;
+
+    // 마우스 드래그
+    handle.addEventListener('mousedown', function(e) {
+      item.draggable = true;
+    });
+    item.addEventListener('dragstart', function(e) {
+      dragSrcId = item.dataset.id;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', function() {
+      item.classList.remove('dragging');
+      el.querySelectorAll('.task-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      item.draggable = false;
+    });
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      el.querySelectorAll('.task-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      if(item.dataset.id !== dragSrcId) item.classList.add('drag-over');
+    });
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if(!dragSrcId || dragSrcId === item.dataset.id) return;
+      reorderTasks(containerId, dragSrcId, item.dataset.id);
+    });
+
+    // 터치 드래그
+    handle.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var touch = e.touches[0];
+      dragSrcId = item.dataset.id;
+      var rect = item.getBoundingClientRect();
+      touchOffX = touch.clientX - rect.left;
+      touchOffY = touch.clientY - rect.top;
+      touchClone = item.cloneNode(true);
+      touchClone.style.cssText = 'position:fixed;z-index:9999;width:'+rect.width+'px;opacity:0.85;pointer-events:none;background:white;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);left:'+(touch.clientX-touchOffX)+'px;top:'+(touch.clientY-touchOffY)+'px;';
+      document.body.appendChild(touchClone);
+      item.classList.add('dragging');
+      touchDragEl = item;
+    }, {passive:false});
+
+    handle.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+      if(!touchClone) return;
+      var touch = e.touches[0];
+      touchClone.style.left = (touch.clientX - touchOffX) + 'px';
+      touchClone.style.top = (touch.clientY - touchOffY) + 'px';
+      // 아래 아이템 찾기
+      touchClone.style.display = 'none';
+      var target = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = '';
+      var targetItem = target ? target.closest('.task-item') : null;
+      el.querySelectorAll('.task-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      if(targetItem && targetItem.dataset.id !== dragSrcId) targetItem.classList.add('drag-over');
+    }, {passive:false});
+
+    handle.addEventListener('touchend', function(e) {
+      if(touchClone) { document.body.removeChild(touchClone); touchClone = null; }
+      if(touchDragEl) { touchDragEl.classList.remove('dragging'); touchDragEl = null; }
+      var touch = e.changedTouches[0];
+      var target = document.elementFromPoint(touch.clientX, touch.clientY);
+      var targetItem = target ? target.closest('.task-item') : null;
+      el.querySelectorAll('.task-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      if(targetItem && targetItem.dataset.id && targetItem.dataset.id !== dragSrcId) {
+        reorderTasks(containerId, dragSrcId, targetItem.dataset.id);
+      }
+      dragSrcId = null;
+    });
+  });
+}
+
+function reorderTasks(containerId, srcId, targetId) {
+  var tasks = loadTasks(currentDate);
+  var srcIdx = tasks.findIndex(function(t){ return String(t.id) === String(srcId); });
+  var tgtIdx = tasks.findIndex(function(t){ return String(t.id) === String(targetId); });
+  if(srcIdx === -1 || tgtIdx === -1) return;
+  var moved = tasks.splice(srcIdx, 1)[0];
+  tasks.splice(tgtIdx, 0, moved);
+  saveTasks(currentDate, tasks);
+  render();
+}
+
+function render() {
+  const tasks=getTasksForDate(currentDate);
+  const done=tasks.filter(function(t){return t.done;});
+  const todo=tasks.filter(function(t){return !t.done;});
+  const total=tasks.length, pct=total===0?0:Math.round(done.length/total*100);
+  const {y,m,d,dow}=parseDate(currentDate);
+  document.getElementById('date-display').textContent=y+'년 '+MONTHS_KO[m-1]+' '+d+'일';
+  document.getElementById('date-day').textContent=DAYS_KO[dow]+'요일';
+  const badge=document.getElementById('date-badge');
+  if(isToday(currentDate)){badge.textContent='오늘';badge.className='badge badge-today';}
+  else if(currentDate>todayStr()){badge.textContent='예정';badge.className='badge badge-future';}
+  else{badge.textContent='과거';badge.className='badge badge-past';}
+  document.getElementById('prev-btn').disabled=false;
+  document.getElementById('next-btn').disabled=false;
+  document.getElementById('pct-big').textContent=pct+'%';
+  document.getElementById('bar').style.width=pct+'%';
+  document.getElementById('ring-circle').style.strokeDashoffset=182.2*(1-pct/100);
+  document.getElementById('pct-label').textContent=total?(total+'개 중 '+done.length+'개 완료'):'업무를 추가해보세요';
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-done').textContent=done.length;
+  document.getElementById('s-left').textContent=todo.length;
+  document.getElementById('motivation').textContent=getMotivation(pct,total);
+  renderList('todo-list',todo); renderList('done-list',done);
+  initDrag('todo-list');
+  document.getElementById('todo-count').textContent=todo.length+'개';
+  document.getElementById('done-count').textContent=done.length+'개';
+  renderTimeline();
+}
+
+function selectPeriod(btn,period) {
+  reportPeriod=period;
+  document.querySelectorAll('.period-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active'); renderReport();
+}
+
+function renderReport() {
+  const today=todayStr(), allKeys=getAllDateKeys();
+  let filteredKeys=[];
+  if(reportPeriod==='week'){
+    const d=new Date(today+'T00:00:00'), dow=d.getDay();
+    const mon=new Date(d); mon.setDate(d.getDate()-dow);
+    for(let i=0;i<=6;i++){
+      const dd=new Date(mon); dd.setDate(mon.getDate()+i);
+      const ds=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+      if(ds<=today) filteredKeys.push(ds);
+    }
+  } else if(reportPeriod==='month'){
+    const {y,m}=parseDate(today);
+    for(let d=1;d<=lastDay(y,m);d++){
+      const ds=dsFromYMD(y,m,d);
+      if(ds<=today&&allKeys.indexOf(ds)!==-1) filteredKeys.push(ds);
+    }
+  } else { filteredKeys=allKeys.slice(); }
+
+  let totalDone=0,perfectDays=0,pctSum=0,pctCount=0;
+  filteredKeys.forEach(function(ds){
+    const tasks=loadTasks(ds); if(!tasks.length) return;
+    const done=tasks.filter(function(t){return t.done;}).length;
+    totalDone+=done;
+    const pct=Math.round(done/tasks.length*100);
+    pctSum+=pct; pctCount++;
+    if(pct===100) perfectDays++;
+  });
+  const avgPct=pctCount?Math.round(pctSum/pctCount):0;
+
+  let streak=0;
+  const dd=new Date(today+'T00:00:00');
+  while(true){
+    const ds=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+    const tasks=loadTasks(ds); if(!tasks.length) break;
+    if(tasks.filter(function(t){return t.done;}).length/tasks.length<1) break;
+    streak++; dd.setDate(dd.getDate()-1);
+  }
+  document.getElementById('rp-streak').textContent=streak+'일';
+  document.getElementById('streak-msg').textContent=streak>=7?'🏆 일주일 연속 달성!':streak>=3?'🔥 연속 달성 중!':streak>0?'💪 계속 이어가요!':'오늘부터 시작해봐요!';
+  document.getElementById('rp-avg').textContent=avgPct+'%';
+  document.getElementById('rp-perfect').textContent=perfectDays+'일';
+  document.getElementById('rp-total-done').textContent=totalDone+'개';
+
+  const weekWrap=document.getElementById('week-chart-wrap'), hmWrap=document.getElementById('heatmap-wrap');
+  if(reportPeriod==='week'){weekWrap.style.display='block';hmWrap.style.display='none';renderWeekBars();}
+  else{weekWrap.style.display='none';hmWrap.style.display='block';document.getElementById('heatmap-title').textContent=reportPeriod==='month'?'이번 달 달성 현황':'전체 달성 현황';renderHeatmap();}
+
+  renderTimeChart(filteredKeys);
+  renderInsights(filteredKeys,avgPct,streak);
+}
+
+function renderWeekBars() {
+  const today=todayStr(), d=new Date(today+'T00:00:00'), dow=d.getDay();
+  const mon=new Date(d); mon.setDate(d.getDate()-dow);
+  let html='';
+  for(let i=0;i<=6;i++){
+    const dd=new Date(mon); dd.setDate(mon.getDate()+i);
+    const ds=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+    const isFut=ds>today, isT=ds===today;
+    const tasks=loadTasks(ds), done=tasks.filter(function(t){return t.done;}).length;
+    const pct=tasks.length?Math.round(done/tasks.length*100):0;
+    html+='<div class="week-bar-wrap'+(isT?' today':'')+'">'
+      +'<div class="week-bar-pct">'+(isFut?'':pct+'%')+'</div>'
+      +'<div class="week-bar-bg"><div class="week-bar-fill" style="height:'+pct+'%;background:'+(isT?'#1a1a1a':'#1D9E75')+'"></div></div>'
+      +'<div class="week-bar-label">'+DAYS_KO[dd.getDay()]+'</div>'
+      +'</div>';
+  }
+  document.getElementById('week-bars').innerHTML=html;
+}
+
+function renderHeatmap() {
+  const grid=document.getElementById('heatmap-grid'), today=todayStr();
+  const d=new Date(today+'T00:00:00'), dow=d.getDay();
+  const start=new Date(d); start.setDate(d.getDate()-dow-28);
+  let html=DAYS_KO.map(function(d){return '<div style="text-align:center;font-size:10px;color:#bbb;padding:2px 0">'+d+'</div>';}).join('');
+  for(let i=0;i<35;i++){
+    const dd=new Date(start); dd.setDate(start.getDate()+i);
+    const ds=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+    if(ds>today){html+='<div class="hm-cell hm-0" style="opacity:0.2"></div>';continue;}
+    const tasks=loadTasks(ds), done=tasks.filter(function(t){return t.done;}).length;
+    const pct=tasks.length?done/tasks.length:0;
+    let lvl=0; if(pct>0)lvl=1; if(pct>=0.5)lvl=2; if(pct>=1)lvl=3;
+    html+='<div class="hm-cell hm-'+lvl+'"></div>';
+  }
+  grid.innerHTML=html;
+}
+
+
+function renderTimeline() {
+  const tasks = getTasksForDate(currentDate);
+  const timed = tasks.filter(function(t){ return t.timeStart && t.timeEnd; });
+  const wrap = document.getElementById('timeline-wrap');
+  if(!timed.length){
+    wrap.innerHTML='<div class="timeline-no-data">시간이 입력된 업무가 없어요</div>';
+    return;
+  }
+  // 시간 범위 계산
+  let minH=24, maxH=0;
+  timed.forEach(function(t){
+    const sh=parseInt(t.timeStart.split(':')[0]);
+    const eh=parseInt(t.timeEnd.split(':')[0])+(parseInt(t.timeEnd.split(':')[1])>0?1:0);
+    if(sh<minH) minH=sh;
+    if(eh>maxH) maxH=eh;
+  });
+  minH=Math.max(0,minH-1); maxH=Math.min(24,maxH+1);
+  const HOUR_H=44;
+  let html='<div class="timeline-wrap" style="height:'+((maxH-minH)*HOUR_H)+'px;">';
+  // 시간 눈금
+  for(let h=minH;h<=maxH;h++){
+    const top=(h-minH)*HOUR_H;
+    html+='<div style="position:absolute;top:'+top+'px;left:0;right:0;">'
+      +'<div class="timeline-hour-label">'+(h<10?'0':'')+h+':00</div>'
+      +'<div class="timeline-hour-tick"></div>'
+      +'</div>';
+  }
+  // 업무 블록
+  timed.forEach(function(t){
+    const [sh,sm]=t.timeStart.split(':').map(Number);
+    const [eh,em]=t.timeEnd.split(':').map(Number);
+    const startMin=(sh*60+sm)-(minH*60);
+    const endMin=(eh*60+em)-(minH*60);
+    const top=Math.round(startMin/60*HOUR_H);
+    const height=Math.max(22,Math.round((endMin-startMin)/60*HOUR_H));
+    const color=CAT_COLORS[t.cat]||'#888';
+    const label=t.name+(t.subCat?' · '+t.subCat:'');
+    html+='<div class="timeline-block" style="top:'+top+'px;height:'+height+'px;background:'+color+(t.done?'':'99')+';opacity:'+(t.done?1:0.75)+';" title="'+t.timeStart+' ~ '+t.timeEnd+' '+t.name+'">'
+      +t.timeStart+'~'+t.timeEnd+' '+label
+      +'</div>';
+  });
+  html+='</div>';
+  wrap.innerHTML=html;
+}
+
+function timeToMin(t) {
+  if(!t) return null;
+  const [h,m] = t.split(':').map(Number);
+  return h*60+m;
+}
+function minToLabel(min) {
+  if(min<=0) return '0분';
+  const h = Math.floor(min/60), m = min%60;
+  if(h===0) return m+'분';
+  if(m===0) return h+'시간';
+  return h+'시간 '+m+'분';
+}
+
+function renderTimeChart(keys) {
+  const catTime = {}, subCatTime = {};
+  Object.keys(SUB_CATS).forEach(function(c){ catTime[c]=0; subCatTime[c]={}; });
+
+  const subCatCount = {};
+  Object.keys(SUB_CATS).forEach(function(c){ subCatCount[c]={}; });
+
+  keys.forEach(function(ds){
+    loadTasks(ds).forEach(function(t){
+      if(!t.timeStart||!t.timeEnd) return;
+      const start=timeToMin(t.timeStart), end=timeToMin(t.timeEnd);
+      if(start===null||end===null||end<=start) return;
+      const diff=end-start;
+      if(catTime[t.cat]!==undefined) {
+        catTime[t.cat]+=diff;
+        if(t.subCat) {
+          subCatTime[t.cat][t.subCat]=(subCatTime[t.cat][t.subCat]||0)+diff;
+          subCatCount[t.cat][t.subCat]=(subCatCount[t.cat][t.subCat]||0)+1;
+        }
+      }
+    });
+  });
+
+  const totalMin = Object.values(catTime).reduce(function(a,b){return a+b;},0);
+  if(!totalMin) {
+    document.getElementById('time-chart').innerHTML='<div class="empty-msg">시간이 입력된 업무가 없어요<br><span style="font-size:12px;color:#ddd">업무 추가 시 시작~종료 시간을 입력해주세요</span></div>';
+    return;
+  }
+
+  const maxMin = Math.max.apply(null, Object.values(catTime));
+  let html = '<div style="font-size:12px;color:#aaa;margin-bottom:14px;">총 '+minToLabel(totalMin)+'</div>';
+
+  Object.keys(catTime).forEach(function(cat){
+    const min=catTime[cat]; if(!min) return;
+    const pct=Math.round(min/maxMin*100);
+    const color=CAT_COLORS[cat]||'#888';
+    const timePct=Math.round(min/totalMin*100);
+    html+='<div class="cat-bar-row">'
+      +'<div class="cat-bar-label">'+cat+'</div>'
+      +'<div class="cat-bar-bg"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+      +'<div style="font-size:11px;color:#666;min-width:80px;text-align:right;white-space:nowrap;">'+minToLabel(min)+' ('+timePct+'%)</div>'
+      +'</div>';
+
+    // 세부 항목: SUB_CATS 전체 + 시간없어도 0으로 표시, 있는것만
+    const allSubs = SUB_CATS[cat] || [];
+    const subsWithData = allSubs.filter(function(s){ return subCatTime[cat][s]; });
+    if(subsWithData.length){
+      const subMax=Math.max.apply(null,subsWithData.map(function(s){return subCatTime[cat][s];}));
+      html+='<div class="subcat-section"><div class="subcat-title">'+cat+' 세부 시간</div>';
+      subsWithData.sort(function(a,b){return subCatTime[cat][b]-subCatTime[cat][a];}).forEach(function(s){
+        const sm=subCatTime[cat][s], sp=Math.round(sm/subMax*100);
+        const cnt=subCatCount[cat][s]||0;
+        html+='<div class="subcat-bar-row">'
+          +'<div class="subcat-bar-label">'+s+'</div>'
+          +'<div class="subcat-bar-bg"><div class="subcat-bar-fill" style="width:'+sp+'%;background:'+color+'"></div></div>'
+          +'<div style="font-size:11px;color:#888;min-width:90px;text-align:right;white-space:nowrap;">'+minToLabel(sm)+' / '+cnt+'개</div>'
+          +'</div>';
+      });
+      html+='</div>';
+    }
+  });
+  document.getElementById('time-chart').innerHTML=html;
+}
+
+function renderInsights(keys,avgPct,streak) {
+  const insights=[];
+  if(streak>=3) insights.push({icon:'🔥',text:streak+'일 연속 달성 중이에요! 이 흐름을 유지해봐요.'});
+  if(avgPct>=80) insights.push({icon:'⭐',text:'평균 달성률 '+avgPct+'%로 매우 높아요!'});
+  else if(avgPct>=50) insights.push({icon:'📈',text:'평균 달성률 '+avgPct+'% — 꾸준히 올라가고 있어요!'});
+  else if(avgPct>0) insights.push({icon:'💡',text:'평균 달성률 '+avgPct+'% — 업무량을 조금 줄여볼까요?'});
+  const catCount={};
+  keys.forEach(function(ds){loadTasks(ds).forEach(function(t){if(t.done)catCount[t.cat]=(catCount[t.cat]||0)+1;});});
+  const topCat=Object.keys(catCount).sort(function(a,b){return catCount[b]-catCount[a];})[0];
+  if(topCat) insights.push({icon:'🏆',text:'가장 많이 완료한 분야는 '+topCat+'이에요 ('+catCount[topCat]+'개).'});
+  if(!insights.length) insights.push({icon:'✨',text:'업무를 추가하고 달성해보세요!'});
+  document.getElementById('insights').innerHTML=insights.map(function(i){
+    return '<div class="insight-item"><span class="insight-icon">'+i.icon+'</span><span>'+i.text+'</span></div>';
+  }).join('');
+}
+
+render();
+renderSubCats();
+</script>
+</body>
+</html>
