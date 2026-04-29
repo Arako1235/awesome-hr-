@@ -1321,8 +1321,8 @@ function renderExited(){
   document.getElementById('ex-list').innerHTML=ex.length?[...ex].reverse().map(e=>`
     <div class="log-item">
       <div class="log-header">
-        <div style="display:flex;align-items:center;gap:8px"><div class="av av-ex">${ini(e.name)}</div>
-        <div><strong>${e.name}</strong> <span style="font-size:11px;color:var(--text3)">${e.branch}</span></div></div>
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="openProfile('${e.name}')"><div class="av av-ex">${ini(e.name)}</div>
+        <div><strong style="text-decoration:underline;text-underline-offset:2px">${e.name}</strong> <span style="font-size:11px;color:var(--text3)">${e.branch}</span><span style="font-size:11px;color:var(--text3);margin-left:4px">· 상세보기</span></div></div>
         <div style="display:flex;align-items:center;gap:6px">
           <span class="badge b-ex">${e.exitDate} 퇴사</span>
           <button onclick="toggleExitedEdit('${e.id}')" style="background:none;border:none;cursor:pointer;font-size:13px;opacity:0.55;padding:2px 5px;" title="수정">✏️</button>
@@ -1490,8 +1490,22 @@ function renderInnerInfo(name){
         <div>${lbl('현재 급여')}${val(fmtSal(t.currentSalary||t.salary))}</div>
       </div>
       <div>${lbl('메모')}${val(t.memo,'없음')}</div>
+      ${isEx?`
+      <div style="background:var(--bg3);border-radius:10px;padding:12px 14px;margin-top:4px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">퇴사 정보</div>
+        <div class="g2">
+          <div>${lbl('퇴사일')}${val(t.exitDate)}</div>
+          <div>${lbl('근속')}${val(t.months+'개월')}</div>
+        </div>
+        <div class="g2">
+          <div>${lbl('퇴사 사유')}${val(t.reason)}</div>
+          <div>${lbl('재고용')}${val(t.rehire==='yes'?'✅ 가능':t.rehire==='maybe'?'🔶 경우에 따라':'❌ 불가')}</div>
+        </div>
+        ${t.last?`<div>${lbl('마지막 면담')}${val(t.last)}</div>`:''}
+        ${t.retro?`<div>${lbl('원장 회고')}${val(t.retro)}</div>`:''}
+      </div>`:''}
       ${(()=>{
-        if(!t.start)return '';
+        if(isEx||!t.start)return '';
         const svDate=severanceStartDate(t);
         const sv=calcSeverance(t);
         const days=workDays(svDate); // 퇴직금 발생일 기준
