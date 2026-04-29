@@ -762,6 +762,11 @@ const SUPABASE_URL = 'https://rgwezytznkbvwgmfsgex.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Tzf67XsbBTTSENHWrJnyZw_YmXmORhH';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// 소수 만원 입력(2.5)→정수 원(25000) / 정수 만원(220)→그대로
+function toSalInt(v){const f=parseFloat(v)||0;return Number.isInteger(f)?f:Math.round(f*10000);}
+// 저장된 값 표시: >=10000이면 원 단위(신규), <10000이면 만원 단위(구버전)
+function fmtSal(v){if(!v)return '';return v>=10000?`${+(v/10000).toFixed(1)}만원`:`${v}만원`;}
+
 // ══ DATA (in-memory cache) ══
 let data = {teachers:[], exited:[], interviews:[], checkins:[],
   salaryHistory:{}, growthHistory:{}, bdMemos:[], leaves:[],
@@ -1104,7 +1109,7 @@ function tCard(t){
     ${(retBadge||t.start||t.currentSalary||t.salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
       ${retBadge}
       ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
-      ${(t.currentSalary||t.salary)?`<span>· ${(t.currentSalary||t.salary)}만</span>`:''}
+      ${(t.currentSalary||t.salary)?`<span>· ${fmtSal(t.currentSalary||t.salary)}</span>`:''}
       ${t.birth?`<span>· 🎂${(function(){const d=parseDate(t.birth);return d?(d.getMonth()+1)+'월 '+d.getDate()+'일':''})()}</span>`:''}
     </div>`:''}
     ${t.memo?`<div style="margin:4px 0 0 44px;font-size:11px;color:var(--amber-text)">${t.memo}</div>`:''}
@@ -1377,7 +1382,7 @@ function openProfile(name){
 function renderPotentialView(t){
   const el=id=>document.getElementById(id);
   el('pv-start').textContent  = t.start||'미정';
-  el('pv-salary').textContent = (t.baseSalary||t.salary)?(t.baseSalary||t.salary)+'만원':'미정';
+  el('pv-salary').textContent = (t.baseSalary||t.salary)?fmtSal(t.baseSalary||t.salary):'미정';
   el('pv-birth').textContent  = t.birth||'미등록';
   el('pv-phone').textContent  = t.phone||'미등록';
   el('pv-memo').textContent   = t.memo||'없음';
@@ -1390,7 +1395,8 @@ function showPotentialEdit(){
   if(!t)return;
   const el=id=>document.getElementById(id);
   el('pe-start').value  = t.start||'';
-  el('pe-salary').value = t.baseSalary||t.salary||'';
+  const psRaw=t.baseSalary||t.salary||0;
+  el('pe-salary').value = psRaw>=10000?(psRaw/10000):psRaw||'';
   el('pe-birth').value  = t.birth||'';
   el('pe-phone').value  = t.phone||'';
   el('pe-memo').value   = t.memo||'';
@@ -1402,7 +1408,7 @@ async function savePotentialEdit(){
   const t=data.teachers.find(t=>t.name===currentProfileTeacher);
   if(!t)return;
   const el=id=>document.getElementById(id);
-  const sal=parseFloat(el('pe-salary').value)||0;
+  const sal=toSalInt(el('pe-salary').value);
   const upd={start_date:el('pe-start').value||null, salary:sal, base_salary:sal,
     birth:el('pe-birth').value||null, phone:el('pe-phone').value||null, memo:el('pe-memo').value||null};
   const {error}=await sb.from('teachers').update(upd).eq('id',t.id);
@@ -1449,8 +1455,8 @@ function renderInnerInfo(name){
         <div>${lbl('연락처')}${val(t.phone)}</div>
       </div>
       <div class="g2">
-        <div>${lbl('초봉')}${val(t.baseSalary||t.salary?(t.baseSalary||t.salary)+'만원':'')}</div>
-        <div>${lbl('현재 급여')}${val(t.currentSalary?(t.currentSalary)+'만원':t.salary?t.salary+'만원':'')}</div>
+        <div>${lbl('초봉')}${val(fmtSal(t.baseSalary||t.salary))}</div>
+        <div>${lbl('현재 급여')}${val(fmtSal(t.currentSalary||t.salary))}</div>
       </div>
       <div>${lbl('메모')}${val(t.memo,'없음')}</div>
       ${(()=>{
@@ -1524,7 +1530,8 @@ function showInfoEdit(name){
   el('ie-end').value    = t.end||'';
   el('ie-birth').value  = t.birth||'';
   el('ie-phone').value  = t.phone||'';
-  el('ie-baseSalary').value = t.baseSalary||t.salary||'';
+  const bsRaw=t.baseSalary||t.salary||0;
+  el('ie-baseSalary').value = bsRaw>=10000?(bsRaw/10000):bsRaw||'';
   el('ie-severanceStart').value = t.severanceStart||'';
   el('ie-memo').value   = t.memo||'';
 }
@@ -1533,7 +1540,7 @@ async function saveInfoEdit(name){
   const t=data.teachers.find(t=>t.name===name);
   if(!t)return;
   const el=id=>document.getElementById(id);
-  const baseSal=parseFloat(el('ie-baseSalary').value)||0;
+  const baseSal=toSalInt(el('ie-baseSalary').value);
   const newName=(el('ie-name').value||'').trim()||name;
   const upd={name:newName, branch:el('ie-branch').value, position:el('ie-position').value||null,
     start_date:el('ie-start').value||null, end_date:el('ie-end').value||null,
@@ -1678,7 +1685,7 @@ async function addTeacher(){
   const isPotential=branchVal==='potential';
   if(!name){alert('이름을 입력해주세요');return}
   if(!isPotential&&(!start||!end)){alert('이름, 입사일, 만료일을 입력해주세요');return}
-  const sal=parseFloat(document.getElementById('t-salary').value)||0;
+  const sal=toSalInt(document.getElementById('t-salary').value);
   const row={name, branch:branchVal, position:document.getElementById('t-position').value||null,
     start_date:start||null, end_date:isPotential?null:(end||null),
     birth:document.getElementById('t-birth').value||null,
@@ -2293,7 +2300,8 @@ function openEditModal(section,id,teacherName){
   } else if(section==='baseSalary'){
     title.textContent='초봉 수정';
     const teacher=data.teachers.find(t=>t.name===teacherName)||data.exited.find(e=>e.name===teacherName);
-    body.innerHTML=_ef('초봉 (만원, 시급은 예: 2.5)',_ei('em-base-amount','number',teacher?.baseSalary||0));
+    const bsv=teacher?.baseSalary||0; const bsDisplay=bsv>=10000?(bsv/10000):bsv;
+    body.innerHTML=_ef('초봉 (만원, 시급은 예: 2.5)',_ei('em-base-amount','number',bsDisplay));
   }
   document.getElementById('edit-modal').style.display='block';
   if(section==='salary'){
@@ -2394,7 +2402,7 @@ async function saveEdit(){
   const v=id=>document.getElementById(id);
   let ud={},table='';
   if(section==='baseSalary'){
-    const newBase=parseFloat(v('em-base-amount').value)||0;
+    const newBase=toSalInt(v('em-base-amount').value);
     const teacher=data.teachers.find(t=>t.name===_editCtx.teacherName)||data.exited.find(e=>e.name===_editCtx.teacherName);
     if(!teacher){alert('강사를 찾을 수 없어요.');return;}
     const tbl=data.teachers.find(t=>t.name===_editCtx.teacherName)?'teachers':'exited_teachers';
