@@ -278,7 +278,7 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
           <div class="field"><label>연락처</label><input type="text" id="t-phone" placeholder="010-0000-0000"></div>
         </div>
         <div class="g2">
-          <div class="field"><label id="label-salary">초봉 (만원)</label><input type="number" id="t-salary" placeholder="220"></div>
+          <div class="field"><label id="label-salary">초봉 (만원)</label><input type="number" id="t-salary" placeholder="220" step="0.1"></div>
           <div class="field"><label>메모</label><input type="text" id="t-memo" placeholder="특이사항"></div>
         </div>
         <button class="btn btn-green" onclick="addTeacher()">강사 추가</button>
@@ -690,7 +690,7 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
         <div id="potential-edit-fields" style="display:none" class="form-grid">
           <div class="g2">
             <div class="field"><label>입사 가능일</label><input type="date" id="pe-start"></div>
-            <div class="field"><label>희망 초봉 (만원)</label><input type="number" id="pe-salary" placeholder="220"></div>
+            <div class="field"><label>희망 초봉 (만원)</label><input type="number" id="pe-salary" placeholder="220" step="0.1"></div>
           </div>
           <div class="g2">
             <div class="field"><label>생년월일</label><input type="date" id="pe-birth"></div>
@@ -1402,7 +1402,7 @@ async function savePotentialEdit(){
   const t=data.teachers.find(t=>t.name===currentProfileTeacher);
   if(!t)return;
   const el=id=>document.getElementById(id);
-  const sal=parseInt(el('pe-salary').value)||0;
+  const sal=parseFloat(el('pe-salary').value)||0;
   const upd={start_date:el('pe-start').value||null, salary:sal, base_salary:sal,
     birth:el('pe-birth').value||null, phone:el('pe-phone').value||null, memo:el('pe-memo').value||null};
   const {error}=await sb.from('teachers').update(upd).eq('id',t.id);
@@ -1501,7 +1501,7 @@ function renderInnerInfo(name){
           <div class="field"><label>생년월일</label><input type="date" id="ie-birth"></div>
           <div class="field"><label>연락처</label><input type="text" id="ie-phone" placeholder="010-0000-0000"></div>
         </div>
-        <div class="field"><label>초봉 (만원)</label><input type="number" id="ie-baseSalary" placeholder="예: 220"></div>
+        <div class="field"><label>초봉 (만원)</label><input type="number" id="ie-baseSalary" placeholder="예: 220 또는 2.5" step="0.1"></div>
         <div class="field"><label>퇴직금 발생일 <span style="font-size:11px;color:var(--text3);font-weight:400;">(비워두면 입사일+1년 자동)</span></label><input type="date" id="ie-severanceStart"></div>
         <div class="field"><label>메모</label><textarea id="ie-memo"></textarea></div>
         <div class="g2">
@@ -1594,7 +1594,13 @@ function renderInnerSalary(name){
   const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
   const base=t?.baseSalary||t?.salary||0;
   let html='';
-  const fmtAmt=(a,reason)=>{const isH=reason&&reason.includes('[시급]');return isH?`${(a/10000).toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:1})}만원 <span style="font-size:11px;color:var(--text3)">(${a.toLocaleString()}원/시)</span>`:a+'만원';};
+  // 시급: amount>=1000이면 원 단위(신규), <1000이면 만원 단위(구버전) 모두 처리
+  const fmtAmt=(a,reason)=>{
+    const isH=reason&&reason.includes('[시급]');
+    if(!isH)return a+'만원';
+    if(a>=1000){const w=a;const m=(w/10000);return `${Number.isInteger(m)?m:m.toFixed(1)}만원 <span style="font-size:11px;color:var(--text3)">(${w.toLocaleString()}원/시)</span>`;}
+    else{const w=Math.round(a*10000);return `${a}만원 <span style="font-size:11px;color:var(--text3)">(${w.toLocaleString()}원/시)</span>`;}
+  };
   if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${fmtAmt(base,'')}</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
   sh.forEach((s,i)=>{
     const prev=i===0?base:sh[i-1].amount;
@@ -1672,7 +1678,7 @@ async function addTeacher(){
   const isPotential=branchVal==='potential';
   if(!name){alert('이름을 입력해주세요');return}
   if(!isPotential&&(!start||!end)){alert('이름, 입사일, 만료일을 입력해주세요');return}
-  const sal=parseInt(document.getElementById('t-salary').value)||0;
+  const sal=parseFloat(document.getElementById('t-salary').value)||0;
   const row={name, branch:branchVal, position:document.getElementById('t-position').value||null,
     start_date:start||null, end_date:isPotential?null:(end||null),
     birth:document.getElementById('t-birth').value||null,
@@ -2287,7 +2293,7 @@ function openEditModal(section,id,teacherName){
   } else if(section==='baseSalary'){
     title.textContent='초봉 수정';
     const teacher=data.teachers.find(t=>t.name===teacherName)||data.exited.find(e=>e.name===teacherName);
-    body.innerHTML=_ef('초봉 (만원)',_ei('em-base-amount','number',teacher?.baseSalary||0));
+    body.innerHTML=_ef('초봉 (만원, 시급은 예: 2.5)',_ei('em-base-amount','number',teacher?.baseSalary||0));
   }
   document.getElementById('edit-modal').style.display='block';
   if(section==='salary'){
