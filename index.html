@@ -1594,7 +1594,7 @@ function renderInnerSalary(name){
   const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
   const base=t?.baseSalary||t?.salary||0;
   let html='';
-  const fmtAmt=(a,reason)=>{const isH=reason&&reason.includes('[시급]');return Number.isInteger(a)?a+'만원':isH?`${a}만원 <span style="font-size:11px;color:var(--text3)">(${Math.round(a*10000).toLocaleString()}원/시)</span>`:`${a}만원`;};
+  const fmtAmt=(a,reason)=>{const isH=reason&&reason.includes('[시급]');return isH?`${(a/10000).toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:1})}만원 <span style="font-size:11px;color:var(--text3)">(${a.toLocaleString()}원/시)</span>`:a+'만원';};
   if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${fmtAmt(base,'')}</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
   sh.forEach((s,i)=>{
     const prev=i===0?base:sh[i-1].amount;
@@ -1782,11 +1782,13 @@ async function saveSalary(){
   const amountEl=document.getElementById('sal-amount');
   const dateEl=document.getElementById('sal-date');
   const reasonEl=document.getElementById('sal-reason');
-  const amount=parseFloat(amountEl.value);
-  const date=dateEl.value||new Date().toISOString().split('T')[0];
-  if(!amount||isNaN(amount)){alert('금액을 입력해주세요');return}
   const payType=document.getElementById('sal-pay-type').value;
   const insType=document.getElementById('sal-ins-type').value;
+  const rawVal=parseFloat(amountEl.value);
+  if(!rawVal||isNaN(rawVal)){alert('금액을 입력해주세요');return}
+  // 시급은 만원 단위 입력(2.5)을 원 단위 정수(25000)로 변환해 저장
+  const amount=payType==='시급'?Math.round(rawVal*10000):Math.round(rawVal);
+  const date=dateEl.value||new Date().toISOString().split('T')[0];
   const reasonNote=reasonEl.value.trim();
   const fullReason='['+payType+']['+insType+']'+(reasonNote?' '+reasonNote:'');
   const {error:e1}=await sb.from('salary_history').insert({teacher_name:name, amount, change_date:date, reason:fullReason});
@@ -2246,7 +2248,8 @@ function openEditModal(section,id,teacherName){
     const r=rec.reason||'';const m=r.match(/^\[([^\]]*)\]\[([^\]]*)\](.*)?$/);
     const pt=m?m[1]:'월급';const it=m?m[2]:'4대보험';const nt=m?(m[3]||'').trim():r;
     const isHourlyRec=(rec.reason||'').includes('[시급]');
-    body.innerHTML=_ef(isHourlyRec?'시급 (만원 단위, 예: 2.5=25,000원)':'금액 (만원)',_ei('em-amount','number',rec.amount))+_ef('날짜',_ei('em-date','date',rec.date))+
+    const displayAmt=isHourlyRec?(rec.amount/10000):rec.amount;
+    body.innerHTML=_ef(isHourlyRec?'시급 (만원 단위, 예: 2.5=25,000원)':'금액 (만원)',_ei('em-amount','number',displayAmt))+_ef('날짜',_ei('em-date','date',rec.date))+
       `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
         <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">급여 유형</label>${_es('em-pay-type',`<option ${pt==='월급'?'selected':''}>월급</option><option ${pt==='시급'?'selected':''}>시급</option>`)}</div>
         <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">보험 유형</label>${_es('em-ins-type',`<option ${it==='4대보험'?'selected':''}>4대보험</option><option ${it==='3.3%'?'selected':''}>3.3%</option>`)}</div>
@@ -2394,8 +2397,10 @@ async function saveEdit(){
     closeEditModal();await loadAll();renderProfile(_editCtx.teacherName);return;
   } else if(section==='salary'){
     const pt=v('em-pay-type').value,it=v('em-ins-type').value,nt=(v('em-reason').value||'').trim();
+    const rawAmt=parseFloat(v('em-amount').value)||0;
+    const savedAmt=pt==='시급'?Math.round(rawAmt*10000):Math.round(rawAmt);
     table='salary_history';
-    ud={amount:parseFloat(v('em-amount').value),change_date:v('em-date').value,reason:'['+pt+']['+it+']'+(nt?' '+nt:'')};
+    ud={amount:savedAmt,change_date:v('em-date').value,reason:'['+pt+']['+it+']'+(nt?' '+nt:'')};
   } else if(section==='growth'){
     table='growth_history';
     ud={record_date:v('em-date').value,type:v('em-type').value,content:v('em-content').value};
