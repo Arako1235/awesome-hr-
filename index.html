@@ -723,11 +723,11 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
           <div class="card-title">급여 변경 기록 추가</div>
           <div class="form-grid">
             <div class="g2">
-              <div class="field"><label>변경 후 금액 (만원)</label><input type="number" id="sal-amount" placeholder="240"></div>
+              <div class="field"><label id="sal-amount-label">변경 후 금액 (만원)</label><input type="number" id="sal-amount" placeholder="240" step="0.1"><div id="sal-amount-hint" style="font-size:11px;color:var(--text3);margin-top:3px;display:none">예: 2.5 = 25,000원, 2.7 = 27,000원</div></div>
               <div class="field"><label>적용 시점</label><input type="date" id="sal-date"></div>
             </div>
             <div class="g2">
-              <div class="field"><label>급여 유형</label><select id="sal-pay-type"><option value="월급">월급</option><option value="시급">시급</option></select></div>
+              <div class="field"><label>급여 유형</label><select id="sal-pay-type" onchange="onSalPayTypeChange(this.value)"><option value="월급">월급</option><option value="시급">시급</option></select></div>
               <div class="field"><label>보험 유형</label><select id="sal-ins-type"><option value="4대보험">4대보험</option><option value="3.3%">3.3%</option></select></div>
             </div>
             <div class="field"><label>사유</label><input type="text" id="sal-reason" placeholder="예: 1차 재계약 인상, 성과 인상 등"></div>
@@ -1594,7 +1594,8 @@ function renderInnerSalary(name){
   const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
   const base=t?.baseSalary||t?.salary||0;
   let html='';
-  if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${base}만원</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
+  const fmtAmt=(a,reason)=>{const isH=reason&&reason.includes('[시급]');return Number.isInteger(a)?a+'만원':isH?`${a}만원 <span style="font-size:11px;color:var(--text3)">(${Math.round(a*10000).toLocaleString()}원/시)</span>`:`${a}만원`;};
+  if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${fmtAmt(base,'')}</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
   sh.forEach((s,i)=>{
     const prev=i===0?base:sh[i-1].amount;
     const diff=s.amount-prev;
@@ -1602,7 +1603,7 @@ function renderInnerSalary(name){
     const tags=[pr.p,pr.i].filter(Boolean).map(t=>'<span style="font-size:11px;background:#e8f4fd;color:#2196f3;padding:2px 6px;border-radius:10px;margin-right:3px;">'+t+'</span>').join('');
     const pct=prev>0?Math.round(diff/prev*1000)/10:0;
     const changeStr=diff>0?'+'+pct+'%':diff<0?pct+'%':'';
-    html+=`<div class="salary-row"><div class="salary-date">${s.date}</div><div class="salary-amount">${s.amount}만원</div><div class="salary-change ${diff>0?'sc-up':diff<0?'sc-down':'sc-same'}">${changeStr||'동일'}</div><div style="flex:1;font-size:12px;color:#555;padding-left:8px;">${tags}${pr.n}</div><button onclick="openEditModal('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="수정">✏️</button><button onclick="deleteRecord('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;
+    html+=`<div class="salary-row"><div class="salary-date">${s.date}</div><div class="salary-amount">${fmtAmt(s.amount,s.reason)}</div><div class="salary-change ${diff>0?'sc-up':diff<0?'sc-down':'sc-same'}">${changeStr||'동일'}</div><div style="flex:1;font-size:12px;color:#555;padding-left:8px;">${tags}${pr.n}</div><button onclick="openEditModal('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="수정">✏️</button><button onclick="deleteRecord('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;
   });
   document.getElementById('inner-salary').innerHTML=(html||'<div class="empty">급여 기록 없음</div>')
     +`<button class="btn btn-sm" style="margin-top:12px;width:auto" onclick="document.getElementById('salary-add-form').style.display=document.getElementById('salary-add-form').style.display==='none'?'block':'none'">+ 급여 변경 기록</button>`;
@@ -1781,7 +1782,7 @@ async function saveSalary(){
   const amountEl=document.getElementById('sal-amount');
   const dateEl=document.getElementById('sal-date');
   const reasonEl=document.getElementById('sal-reason');
-  const amount=parseInt(amountEl.value);
+  const amount=parseFloat(amountEl.value);
   const date=dateEl.value||new Date().toISOString().split('T')[0];
   if(!amount||isNaN(amount)){alert('금액을 입력해주세요');return}
   const payType=document.getElementById('sal-pay-type').value;
@@ -2244,7 +2245,8 @@ function openEditModal(section,id,teacherName){
     title.textContent='급여 기록 수정';
     const r=rec.reason||'';const m=r.match(/^\[([^\]]*)\]\[([^\]]*)\](.*)?$/);
     const pt=m?m[1]:'월급';const it=m?m[2]:'4대보험';const nt=m?(m[3]||'').trim():r;
-    body.innerHTML=_ef('날짜',_ei('em-date','date',rec.date))+_ef('금액 (만원)',_ei('em-amount','number',rec.amount))+
+    const isHourlyRec=(rec.reason||'').includes('[시급]');
+    body.innerHTML=_ef(isHourlyRec?'시급 (만원 단위, 예: 2.5=25,000원)':'금액 (만원)',_ei('em-amount','number',rec.amount))+_ef('날짜',_ei('em-date','date',rec.date))+
       `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
         <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">급여 유형</label>${_es('em-pay-type',`<option ${pt==='월급'?'selected':''}>월급</option><option ${pt==='시급'?'selected':''}>시급</option>`)}</div>
         <div><label style="display:block;font-size:12px;color:#888;margin-bottom:4px;font-weight:600;">보험 유형</label>${_es('em-ins-type',`<option ${it==='4대보험'?'selected':''}>4대보험</option><option ${it==='3.3%'?'selected':''}>3.3%</option>`)}</div>
@@ -2285,6 +2287,14 @@ function openEditModal(section,id,teacherName){
     body.innerHTML=_ef('초봉 (만원)',_ei('em-base-amount','number',teacher?.baseSalary||0));
   }
   document.getElementById('edit-modal').style.display='block';
+  if(section==='salary'){
+    const amtEl=document.getElementById('em-amount');
+    if(amtEl)amtEl.step='0.1';
+  }
+  if(section==='baseSalary'){
+    const amtEl=document.getElementById('em-base-amount');
+    if(amtEl)amtEl.step='0.1';
+  }
 }
 
 function closeEditModal(){
@@ -2309,6 +2319,13 @@ async function deleteBaseSalary(teacherName){
   const {error}=await sb.from(tbl).update({base_salary:0,salary:0}).eq('id',teacher.id);
   if(error){alert('삭제 실패: '+error.message);return;}
   await loadAll();renderProfile(teacherName);
+}
+
+function onSalPayTypeChange(val){
+  const isHourly=val==='시급';
+  document.getElementById('sal-amount-label').textContent=isHourly?'시급 (만원 단위)':'변경 후 금액 (만원)';
+  document.getElementById('sal-amount').placeholder=isHourly?'예: 2.5':'240';
+  document.getElementById('sal-amount-hint').style.display=isHourly?'':'none';
 }
 
 let _exitedEditId=null;
