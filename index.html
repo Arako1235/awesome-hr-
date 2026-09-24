@@ -918,6 +918,28 @@ function renderSubNav(){
 }
 
 // ══ HELPERS ══
+// 급여는 한국 날짜와 적용일로 계산한다. 미래 예약 급여는 현재 급여가 아니다.
+function salaryDateKST(now=new Date()){
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+  const part=type=>parts.find(p=>p.type===type).value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+}
+function currentSalaryAt(t,asOf=salaryDateKST()){
+  const history=data.salaryHistory[t.name]||[];
+  let effective=null;
+  for(const entry of history){
+    if(!entry.date||entry.date>asOf)continue;
+    if(!effective||entry.date>effective.date||(entry.date===effective.date&&Number(entry.id||0)>Number(effective.id||0)))effective=entry;
+  }
+  if(effective)return Number(effective.amount)||0;
+  // current_salary에는 과거 버전이 저장한 미래 금액이 있을 수 있어 초봉을 우선한다.
+  return Number(t.baseSalary||t.salary||(history.length?0:t.currentSalary)||0);
+}
+function refreshSalaryViews(name){
+  renderInnerInfo(name);
+  renderInnerSalary(name);
+  render();
+}
 function parseDate(dStr){
   if(!dStr) return null;
   const [y, m, d] = dStr.split('-').map(Number);
@@ -941,8 +963,7 @@ function calcSeverance(t){
   const now=new Date();
   if(new Date(svDate)>now) return 0; // 아직 발생 전
   const days=workDays(svDate); // 퇴직금 발생일부터 오늘까지 계산
-  const sh=data.salaryHistory[t.name]||[];
-  const cur=sh.length?sh[sh.length-1].amount:(t.currentSalary||t.salary||0);
+  const cur=currentSalaryAt(t);
   if(!cur)return 0;
   return Math.round(cur*(days/365)*10)/10;
 }
@@ -976,8 +997,7 @@ function renderDash(){
   document.getElementById('m-potential').textContent=potentials.length;
   // 총급여 계산 (현재 급여 기준)
   const salSum=(branch)=>ts.filter(t=>t.branch===branch).reduce((s,t)=>{
-    const sh=data.salaryHistory[t.name]||[];
-    const cur=sh.length?sh[sh.length-1].amount:(t.currentSalary||t.salary||0);
+    const cur=currentSalaryAt(t);
     return s+cur;
   },0);
   const s1=salSum('공릉'),s2=salSum('중계');
@@ -1089,6 +1109,7 @@ function renderDash(){
 }
 
 function tCard(t){
+  const salary=currentSalaryAt(t);
   const ret=latestRetention(t.name);
   const retBadge=ret?`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${ret.rate>=85?'var(--green-bg)':ret.rate>=70?'var(--amber-bg)':'var(--red-bg)'};color:${ret.rate>=85?'var(--green-text)':ret.rate>=70?'var(--amber-text)':'var(--red-text)'};white-space:nowrap">📈 ${ret.rate}%</span>`:'';
   return `<div draggable="true" data-id="${t.id}"
@@ -1106,10 +1127,10 @@ function tCard(t){
       <span class="badge b-${sc(t)}" style="font-size:10px;flex-shrink:0">${t.branch==='potential'?'Potential':scL(t)}</span>
     </div>
     <!-- 중간: 등록률 + 부가정보 -->
-    ${(retBadge||t.start||t.currentSalary||t.salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
+    ${(retBadge||t.start||salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
       ${retBadge}
       ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
-      ${(t.currentSalary||t.salary)?`<span>· ${fmtSal(t.currentSalary||t.salary)}</span>`:''}
+      ${salary?`<span>· ${fmtSal(salary)}</span>`:''}
       ${t.birth?`<span>· 🎂${(function(){const d=parseDate(t.birth);return d?(d.getMonth()+1)+'월 '+d.getDate()+'일':''})()}</span>`:''}
     </div>`:''}
     ${t.memo?`<div style="margin:4px 0 0 44px;font-size:11px;color:var(--amber-text)">${t.memo}</div>`:''}
@@ -1487,7 +1508,7 @@ function renderInnerInfo(name){
       </div>
       <div class="g2">
         <div>${lbl('초봉')}${val(fmtSal(t.baseSalary||t.salary))}</div>
-        <div>${lbl('현재 급여')}${val(fmtSal(t.currentSalary||t.salary))}</div>
+        <div>${lbl('현재 급여')}${val(fmtSal(currentSalaryAt(t)))}</div>
       </div>
       <div>${lbl('메모')}${val(t.memo,'없음')}</div>
       ${isEx?`
@@ -1642,7 +1663,7 @@ function renderInnerInterviews(name){
 }
 
 function renderInnerSalary(name){
-  const sh=(data.salaryHistory[name]||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const sh=[...(data.salaryHistory[name]||[])].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
   const base=t?.baseSalary||t?.salary||0;
   let html='';
@@ -1846,19 +1867,17 @@ async function saveSalary(){
   if(!rawVal||isNaN(rawVal)){alert('금액을 입력해주세요');return}
   // 시급은 만원 단위 입력(2.5)을 원 단위 정수(25000)로 변환해 저장
   const amount=payType==='시급'?Math.round(rawVal*10000):Math.round(rawVal);
-  const date=dateEl.value||new Date().toISOString().split('T')[0];
+  const date=dateEl.value||salaryDateKST();
   const reasonNote=reasonEl.value.trim();
   const fullReason='['+payType+']['+insType+']'+(reasonNote?' '+reasonNote:'');
   const {error:e1}=await sb.from('salary_history').insert({teacher_name:name, amount, change_date:date, reason:fullReason});
   if(e1){alert('저장 실패: '+e1.message);return}
-  // 강사 currentSalary 업데이트
-  const t=data.teachers.find(t=>t.name===name);
-  if(t){await sb.from('teachers').update({current_salary:amount}).eq('id',t.id);}
+  // 현재 급여는 저장된 초봉과 적용일 이력에서 조회 시 계산한다.
   await loadAll();
   amountEl.value='';reasonEl.value='';
-  dateEl.value=new Date().toISOString().split('T')[0];
+  dateEl.value=salaryDateKST();
   document.getElementById('salary-add-form').style.display='none';
-  renderInnerSalary(name);render();
+  refreshSalaryViews(name);
   alert('급여 변경이 저장되었습니다!');
 }
 
@@ -2195,7 +2214,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   await loadAll();
 
   const today=new Date().toISOString().split('T')[0];
-  ['t-start','iv-date','lv-date','ex-date','gr-date','sal-date'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=today});
+  ['t-start','iv-date','lv-date','ex-date','gr-date','sal-date'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=i==='sal-date'?salaryDateKST():today});
   const thisMonth=today.slice(0,7);
   const rtMonth=document.getElementById('rt-month');if(rtMonth)rtMonth.value=thisMonth;
   const e=new Date();e.setFullYear(e.getFullYear()+1);
@@ -2331,7 +2350,9 @@ async function deleteRecord(section,id,teacherName){
   if(!confirm((labels[section]||'기록')+'을 삭제할까요? 되돌릴 수 없어요.'))return;
   const {error}=await sb.from(tables[section]).delete().eq('id',id);
   if(error){alert('삭제 실패: '+error.message);return;}
-  await loadAll();renderProfile(teacherName);
+  await loadAll();
+  if(section==='salary')refreshSalaryViews(teacherName);
+  else renderProfile(teacherName);
 }
 
 async function deleteBaseSalary(teacherName){
@@ -2420,6 +2441,7 @@ async function saveEdit(){
   closeEditModal();
   await loadAll();
   if(section==='leave') renderLeave();
+  else if(section==='salary') refreshSalaryViews(teacherName);
   else renderProfile(teacherName);
 }
 </script>
