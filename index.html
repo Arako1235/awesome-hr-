@@ -1492,6 +1492,40 @@ function renderBirthday(){
   document.getElementById('bd-memo-log').innerHTML=data.bdMemos.length?[...data.bdMemos].reverse().map(m=>`<div class="log-item"><div class="log-header"><strong>${m.teacher}</strong> · ${m.year}년<span style="font-size:11px;color:var(--text3)">${m.date}</span></div><div class="log-detail">${m.memo}</div></div>`).join(''):'';
 }
 
+let leaveHistoryTeacher=null;
+let leaveHistoryYear=String(new Date().getFullYear());
+
+function renderLeaveRecords(records){
+  return records.length?[...records].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l=>`
+    <div class="log-item">
+      <div class="log-header"><strong>${candidateEscape(l.teacher)}</strong> · ${candidateEscape(l.days)}일 (${candidateEscape(l.reason)}) <span class="badge ${l.salaryDeducted?'b-danger':'b-safe'}" style="font-size:10px">${l.salaryDeducted?'차감':'차감없음'}</span><span style="font-size:11px;color:var(--text3)">${candidateEscape(l.date)}</span></div>
+      ${l.memo?`<div class="log-detail">${candidateEscape(l.memo)}</div>`:''}
+      <div style="margin-top:6px">
+        <button onclick="editLeave(${Number(l.id)})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.65;padding:2px 4px;" title="수정">✏️ 수정</button>
+        <button onclick="deleteLeave(${Number(l.id)})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.65;padding:2px 4px;" title="삭제">🗑️ 삭제</button>
+      </div>
+    </div>`).join(''):'<div class="empty">선택한 기간의 연차 사용 기록이 없습니다.</div>';
+}
+
+function renderTeacherLeaveHistory(name){
+  const records=data.leaves.filter(l=>l.teacher===name);
+  const currentYear=String(new Date().getFullYear());
+  const years=[...new Set([currentYear,...records.map(l=>String(l.date||'').slice(0,4)).filter(y=>/^\d{4}$/.test(y))])].sort((a,b)=>Number(b)-Number(a));
+  const filtered=records.filter(l=>leaveHistoryYear==='all'||String(l.date||'').slice(0,4)===leaveHistoryYear);
+  const total=filtered.reduce((sum,l)=>sum+(parseFloat(l.days)||0),0);
+  return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+    <strong style="font-size:13px">${candidateEscape(name)} · 연차 사용 이력</strong>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px">기간
+      <select id="lv-teacher-history-year" aria-label="연차 이력 기간" style="width:auto;padding:5px 8px">
+        ${years.map(year=>`<option value="${year}" ${leaveHistoryYear===year?'selected':''}>${year}년</option>`).join('')}
+        <option value="all" ${leaveHistoryYear==='all'?'selected':''}>전체 기간</option>
+      </select>
+    </label>
+  </div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:10px">${leaveHistoryYear==='all'?'전체 기간':leaveHistoryYear+'년'} · ${filtered.length}건 · 총 ${total}일 사용 · 최근 날짜순</div>
+  ${renderLeaveRecords(filtered)}`;
+}
+
 function renderLeave(){
   const ts=data.teachers,n=new Date();
   const activeTs=ts.filter(t=>t.branch!=='potential');
@@ -1499,28 +1533,33 @@ function renderLeave(){
   document.getElementById('lv-zero').textContent=activeTs.filter(t=>getQ(t.name)-getU(t.name)<=0).length;
   document.getElementById('lv-thismonth').textContent=data.leaves.filter(l=>{const d=new Date(l.date);return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()}).reduce((s,l)=>s+parseFloat(l.days),0);
   const sortedTs=[...activeTs].sort((a,b)=>getU(b.name)-getU(a.name));
-  document.getElementById('lv-list').innerHTML=sortedTs.map(t=>{
-    const q=getQ(t.name),u=getU(t.name),r=q-u,p=Math.min(u/q*100,100);
+  document.getElementById('lv-list').innerHTML=sortedTs.map((t,index)=>{
+    const q=getQ(t.name),u=getU(t.name),r=q-u,p=q>0?Math.min(u/q*100,100):0;
+    const expanded=leaveHistoryTeacher===t.name;
     return `<div style="padding:12px 0;border-bottom:0.5px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="display:flex;align-items:center;gap:8px"><div class="av av-safe" style="width:30px;height:30px;font-size:11px">${ini(t.name)}</div>
-        <div><div class="t-name">${t.name}</div><div class="t-sub">${t.branch}</div></div></div>
+        <div><button type="button" class="t-name" data-leave-teacher-index="${index}" aria-expanded="${expanded}" aria-controls="lv-teacher-history-${index}" style="background:none;border:0;padding:4px 0;color:var(--green-text);font:inherit;font-weight:600;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px">${candidateEscape(t.name)} <span style="font-size:11px;font-weight:400">${expanded?'▴ 닫기':'▾ 사용 이력'}</span></button><div class="t-sub">${candidateEscape(t.branch)}</div></div></div>
         <div style="text-align:right"><span style="font-size:15px;font-weight:600">${r}</span><span style="font-size:11px;color:var(--text2)">일 잔여 (${u}/${q})</span></div>
       </div>
       <div class="risk-track"><div class="risk-fill ${r<=0?'rf-red':r<=3?'rf-amber':'rf-green'}" style="width:${p}%"></div></div>
+      <div id="lv-teacher-history-${index}" ${expanded?'':'hidden'} style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:var(--radius)">${expanded?renderTeacherLeaveHistory(t.name):''}</div>
     </div>`;}).join('');
+  document.querySelectorAll('[data-leave-teacher-index]').forEach(button=>{
+    button.onclick=()=>{
+      const name=sortedTs[Number(button.dataset.leaveTeacherIndex)].name;
+      leaveHistoryTeacher=leaveHistoryTeacher===name?null:name;
+      leaveHistoryYear=String(new Date().getFullYear());
+      renderLeave();
+      document.querySelector('[data-leave-teacher-index="'+button.dataset.leaveTeacherIndex+'"]')?.focus({preventScroll:true});
+    };
+  });
+  const yearSelect=document.getElementById('lv-teacher-history-year');
+  if(yearSelect)yearSelect.onchange=()=>{leaveHistoryYear=yearSelect.value;renderLeave();document.getElementById('lv-teacher-history-year')?.focus({preventScroll:true});};
   document.getElementById('lv-quota-list').innerHTML=activeTs.map(t=>`
     <div class="toggle-row"><div class="toggle-label">${t.name} <span style="font-size:11px;color:var(--text3)">${t.branch}</span></div>
     <div style="display:flex;align-items:center;gap:6px"><input type="number" min="1" max="30" value="${getQ(t.name)}" style="width:58px;text-align:center;padding:4px 6px;font-size:13px" onchange="updateQuota('${t.name}',this.value)"><span style="font-size:12px;color:var(--text2)">일</span></div></div>`).join('');
-  document.getElementById('lv-history').innerHTML=data.leaves.length?[...data.leaves].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l=>`
-    <div class="log-item">
-      <div class="log-header"><strong>${l.teacher}</strong> · ${l.days}일 (${l.reason}) <span class="badge ${l.salaryDeducted?'b-danger':'b-safe'}" style="font-size:10px">${l.salaryDeducted?'차감':'차감없음'}</span><span style="font-size:11px;color:var(--text3)">${l.date}</span></div>
-      ${l.memo?`<div class="log-detail">${l.memo}</div>`:''}
-      <div style="margin-top:6px">
-        <button onclick="editLeave(${l.id})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;" title="수정">✏️ 수정</button>
-        <button onclick="deleteLeave(${l.id})" style="background:none;border:none;cursor:pointer;font-size:12px;opacity:0.45;padding:2px 4px;" title="삭제">🗑️ 삭제</button>
-      </div>
-    </div>`).join(''):'<div class="empty">기록 없음</div>';
+  document.getElementById('lv-history').innerHTML=renderLeaveRecords(data.leaves);
 }
 
 function renderExited(){
