@@ -1297,10 +1297,10 @@ function renderDash(){
     }).join('') : '<div class="empty" style="padding:12px;font-size:12px">계약 만료 예정 없음</div>';
   }
 
-  // 대시보드: 다가오는 생일 (가까운 순 5명)
+  // 대시보드: 다가오는 생일 (재직자 중 가까운 순 5명)
   const bdEl = document.getElementById('dash-birthday-list');
   if(bdEl){
-    const withBirth = data.teachers.filter(t=>t.birth);
+    const withBirth = ts.filter(t=>t.birth);
     const bdSorted = [...withBirth].sort((a,b)=>bdD(a.birth)-bdD(b.birth)).slice(0,5);
     bdEl.innerHTML = bdSorted.length ? bdSorted.map(t=>{
       const d=bdD(t.birth), bd=new Date(t.birth);
