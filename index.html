@@ -1915,7 +1915,7 @@ function renderInnerInterviews(name){
 }
 
 function renderInnerSalary(name){
-  const sh=[...(data.salaryHistory[name]||[])].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const sh=[...(data.salaryHistory[name]||[])].sort((a,b)=>new Date(b.date)-new Date(a.date));
   const t=data.teachers.find(t=>t.name===name)||data.exited.find(e=>e.name===name);
   const base=t?.baseSalary||t?.salary||0;
   let html='';
@@ -1926,9 +1926,8 @@ function renderInnerSalary(name){
     if(a>=1000){const w=a;const m=(w/10000);return `${Number.isInteger(m)?m:m.toFixed(1)}만원 <span style="font-size:11px;color:var(--text3)">(${w.toLocaleString()}원/시)</span>`;}
     else{const w=Math.round(a*10000);return `${a}만원 <span style="font-size:11px;color:var(--text3)">(${w.toLocaleString()}원/시)</span>`;}
   };
-  if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${fmtAmt(base,'')}</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
   sh.forEach((s,i)=>{
-    const prev=i===0?base:sh[i-1].amount;
+    const prev=i===sh.length-1?base:sh[i+1].amount;
     const diff=s.amount-prev;
     const pr=(()=>{const r=s.reason||'';const m=r.match(/^\[([^\]]*)\]\[([^\]]*)\](.*)?$/);return m?{p:m[1],i:m[2],n:(m[3]||'').trim()}:{p:'',i:'',n:r};})();
     const tags=[pr.p,pr.i].filter(Boolean).map(t=>'<span style="font-size:11px;background:#e8f4fd;color:#2196f3;padding:2px 6px;border-radius:10px;margin-right:3px;">'+t+'</span>').join('');
@@ -1936,6 +1935,7 @@ function renderInnerSalary(name){
     const changeStr=diff>0?'+'+pct+'%':diff<0?pct+'%':'';
     html+=`<div class="salary-row"><div class="salary-date">${s.date}</div><div class="salary-amount">${fmtAmt(s.amount,s.reason)}</div><div class="salary-change ${diff>0?'sc-up':diff<0?'sc-down':'sc-same'}">${changeStr||'동일'}</div><div style="flex:1;font-size:12px;color:#555;padding-left:8px;">${tags}${pr.n}</div><button onclick="openEditModal('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="수정">✏️</button><button onclick="deleteRecord('salary',${s.id},'${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;
   });
+  if(base){html+=`<div class="salary-row"><div class="salary-date">입사${t?.start?' ('+t.start+')':''}</div><div class="salary-amount">${fmtAmt(base,'')}</div><div class="salary-change sc-same">초봉</div><button onclick="deleteBaseSalary('${name}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 4px;opacity:0.5;flex-shrink:0;" title="삭제">🗑️</button></div>`;}
   document.getElementById('inner-salary').innerHTML=(html||'<div class="empty">급여 기록 없음</div>')
     +`<button class="btn btn-sm" style="margin-top:12px;width:auto" onclick="document.getElementById('salary-add-form').style.display=document.getElementById('salary-add-form').style.display==='none'?'block':'none'">+ 급여 변경 기록</button>`;
 }
