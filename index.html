@@ -533,70 +533,9 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
 
 <!-- ══ RETENTION ══ -->
 <div id="page-retention" class="page">
-  <div class="page-title">재등록률 · 퇴원율</div>
-  <div class="page-sub">경영 원장의 자동 퇴원율과 수동 재등록률 기록을 함께 확인합니다</div>
+  <div class="page-title">교사별 퇴원율</div>
+  <div class="page-sub">2026년 1월부터 경영 원장과 자동 연동 · 퇴원 당시 담임 기준</div>
   <div id="auto-withdrawal-overview"></div>
-
-  <div class="card">
-    <div class="card-title">이번 달 등록률 기록</div>
-    <div class="form-grid">
-      <div class="g2">
-        <div class="field"><label>기록 월</label><input type="month" id="rt-month"></div>
-        <div class="field"><label>강사 선택</label><select id="rt-teacher"><option value="">— 선택 —</option></select></div>
-      </div>
-      <div class="g3">
-        <div class="field">
-          <label>전체 원생 (명)</label>
-          <input type="number" id="rt-total-students" placeholder="0" oninput="calcRtRate()">
-        </div>
-        <div class="field">
-          <label>신규생 (명)</label>
-          <input type="number" id="rt-new-students" placeholder="0" oninput="calcRtRate()">
-        </div>
-        <div class="field">
-          <label>퇴원생 (명)</label>
-          <input type="number" id="rt-exited-students" placeholder="0" oninput="calcRtRate()">
-        </div>
-      </div>
-      <div class="field">
-        <label>정밀 재등록률 (%)</label>
-        <input type="range" min="0" max="100" value="85" id="rt-rate" step="1" oninput="document.getElementById('rt-rate-out').textContent=this.value+' %'">
-        <div class="score-box" id="rt-rate-out">85 %</div>
-      </div>
-      <div class="field"><label>메모 (선택)</label><textarea id="rt-memo" placeholder="예: 특정 반 상담 영향, 이탈 사유 등"></textarea></div>
-      <button class="btn btn-green" onclick="saveRetention()">등록률 저장</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">월별 평균 등록률 추이</div>
-    <div style="height:200px; margin-bottom:20px;">
-      <canvas id="retention-chart-monthly"></canvas>
-    </div>
-    <div id="retention-monthly"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">재등록률 히스토리</div>
-    
-    <!-- 필터 영역 -->
-    <div style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-      <select id="rt-year-filter" onchange="renderRetention()" style="width:auto;padding:6px 10px;font-size:13px"></select>
-      <select id="rt-filter" onchange="renderRetention()" style="width:auto;padding:6px 10px;font-size:13px">
-        <option value="">전체 강사</option>
-      </select>
-    </div>
-
-    <!-- 월 선택 버튼 (폴더형) -->
-    <div id="rt-month-tabs" style="display:flex; gap:4px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;">
-      <!-- JS에서 1~12월 버튼 생성 -->
-    </div>
-
-    <div id="retention-chart-teacher-container" style="height:200px; margin-bottom:20px; display:none;">
-      <canvas id="retention-chart-teacher"></canvas>
-    </div>
-    <div id="retention-log"></div>
-  </div>
 </div>
 
 <!-- ══ EXITED ══ -->
@@ -761,7 +700,7 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
         <button class="tab-inner-btn" onclick="switchInner('salary',this)">💰 급여 히스토리</button>
         <button class="tab-inner-btn" onclick="switchInner('growth',this)">📈 성장 기록</button>
         <button class="tab-inner-btn" onclick="switchInner('interviews',this)">💬 면담 히스토리</button>
-        <button class="tab-inner-btn" onclick="switchInner('retention',this)">📊 재등록·퇴원율</button>
+        <button class="tab-inner-btn" onclick="switchInner('retention',this)">📊 퇴원율</button>
       </div>
       <div id="inner-info" class="inner-panel active"></div>
       <div id="inner-growth" class="inner-panel"></div>
@@ -1008,7 +947,7 @@ function teacherToDB(t){return {name:t.name, branch:t.branch, position:t.positio
 
 async function loadAll(){
   try{
-    const [ts, ex, iv, ci, sh, gh, lv, lq, bm, st, rt] = await Promise.all([
+    const [ts, ex, iv, ci, sh, gh, lv, lq, bm, st] = await Promise.all([
       sb.from('teachers').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true}),
       sb.from('exited_teachers').select('*').order('exit_date',{ascending:false}),
       sb.from('interviews').select('*').order('id',{ascending:true}),
@@ -1019,7 +958,6 @@ async function loadAll(){
       sb.from('leave_quotas').select('*'),
       sb.from('birthday_memos').select('*').order('id',{ascending:false}),
       sb.from('settings').select('*'),
-      sb.from('retention_rates').select('*').order('record_month',{ascending:false}),
     ]);
     data.teachers = (ts.data||[]).map(teacherFromDB);
     data.exited   = (ex.data||[]).map(r=>({id:r.id, name:r.name, branch:r.branch, position:r.position,
@@ -1051,9 +989,6 @@ async function loadAll(){
     data.potentialBoardReady=!st.error;
     data.potentialBoard=(st.data||[]).find(r=>r.key==='potential_board_v1')?.value||null;
     if(posRow && posRow.value) data.positions = posRow.value;
-    data.retentionRates = (rt.data||[]).map(r=>({id:r.id, teacher:r.teacher_name,
-      rate:parseFloat(r.rate), month:r.record_month, memo:r.memo,
-      created:r.created_at}));
   } catch(e){
     console.error('loadAll error', e);
     alert('데이터 로딩 실패: '+e.message);
@@ -1063,9 +998,6 @@ async function loadAll(){
 function save(){/* no-op — DB writes happen in individual actions */}
 
 let currentProfileTeacher=null;
-let monthlyChart = null;
-let teacherChart = null;
-let currentRtMonth = new Date().getMonth() + 1; // 1-12
 
 // ══ NAV ══
 // 그룹 구조: 각 그룹에 속한 페이지들
@@ -1077,7 +1009,7 @@ const GROUPS = {
 };
 const GROUP_LABELS = {
   teachers: [['teachers','👥 재직 강사'],['exited','📁 퇴사자'],['onboarding','🚀 온보딩']],
-  records:  [['interview','💬 면담'],['checkin','✅ 체크인'],['leave','📅 연차'],['retention','📈 재등록·퇴원율']],
+  records:  [['interview','💬 면담'],['checkin','✅ 체크인'],['leave','📅 연차'],['retention','📈 퇴원율']],
   more:     [['contract','📋 계약 일정'],['signals','⚠️ 이탈 신호 가이드'],['birthday','🎂 생일'],['settings','⚙️ 설정']]
 };
 const TOP_TABS = ['dashboard','teachers','records','more'];
@@ -1371,8 +1303,6 @@ function renderDash(){
 
 function tCard(t){
   const salary=currentSalaryAt(t);
-  const ret=latestRetention(t.name);
-  const retBadge=ret?`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${ret.rate>=85?'var(--green-bg)':ret.rate>=70?'var(--amber-bg)':'var(--red-bg)'};color:${ret.rate>=85?'var(--green-text)':ret.rate>=70?'var(--amber-text)':'var(--red-text)'};white-space:nowrap">📈 ${ret.rate}%</span>`:'';
   return `<div draggable="true" data-id="${t.id}"
     ondragstart="dragStart(event)" ondragover="dragOver(event)"
     ondrop="dragDrop(event)" ondragend="dragEnd(event)"
@@ -1388,8 +1318,7 @@ function tCard(t){
       <span class="badge b-${sc(t)}" style="font-size:10px;flex-shrink:0">${t.branch==='potential'?'Potential':scL(t)}</span>
     </div>
     <!-- 중간: 등록률 + 부가정보 -->
-    ${(retBadge||t.start||salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
-      ${retBadge}
+    ${(t.start||salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
       ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
       ${salary?`<span>· ${fmtSal(salary)}</span>`:''}
       ${t.birth?`<span>· 🎂${(function(){const d=parseDate(t.birth);return d?(d.getMonth()+1)+'월 '+d.getDate()+'일':''})()}</span>`:''}
@@ -1687,10 +1616,10 @@ function renderExited(){
 
 function populateSels(){
   const ts = data.teachers.filter(t => t.branch !== 'potential');
-  ['ci-teacher','iv-teacher','bd-teacher','lv-teacher','iv-filter','ex-teacher','rt-teacher','rt-filter'].forEach(id=>{
+  ['ci-teacher','iv-teacher','bd-teacher','lv-teacher','iv-filter','ex-teacher'].forEach(id=>{
     const s=document.getElementById(id);if(!s)return;
     const v=s.value;
-    const opts=(id==='iv-filter'||id==='rt-filter')?'<option value="">전체 강사</option>':'<option value="">— 선택 —</option>';
+    const opts=(id==='iv-filter')?'<option value="">전체 강사</option>':'<option value="">— 선택 —</option>';
     s.innerHTML=opts+ts.map(t=>`<option value="${t.name}">${t.name} (${t.branch})</option>`).join('');
     s.value=v;
   });
@@ -1982,41 +1911,10 @@ function renderInnerCheckins(name){
 }
 
 
+
 function renderInnerRetention(name){
-  const rs=(data.retentionRates||[]).filter(r=>r.teacher===name).sort((a,b)=>b.month.localeCompare(a.month));
   const el=document.getElementById('inner-retention');
-  if(!el)return;
-  if(!rs.length){el.innerHTML=withdrawalWidgetHtml(name)+'<div class="empty">수동 재등록률 기록 없음</div>';return;}
-  const avg=Math.round(rs.reduce((s,r)=>s+r.rate,0)/rs.length*10)/10;
-  const latest=rs[0].rate;
-  const autoWidget=withdrawalWidgetHtml(name);
-  const color=latest>=80?'var(--green)':latest>=60?'#f59e0b':'#ef4444';
-  el.innerHTML=autoWidget+`
-    <h3 style="font-size:14px;margin:20px 0 12px">수동 재등록률 기록</h3>
-    <div style="display:flex;gap:16px;margin-bottom:16px;">
-      <div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px;">최근 등록률</div>
-        <div style="font-size:28px;font-weight:800;color:${color};">${latest}%</div>
-      </div>
-      <div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px;">평균 등록률</div>
-        <div style="font-size:28px;font-weight:800;color:var(--text1);">${avg}%</div>
-      </div>
-    </div>
-    ${rs.map(r=>{
-      const c=r.rate>=80?'var(--green)':r.rate>=60?'#f59e0b':'#ef4444';
-      const bar=Math.round(r.rate);
-      return `<div style="margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-          <span style="font-weight:600;color:var(--text2);">${r.month}</span>
-          <span style="font-weight:700;color:${c};">${r.rate}%</span>
-        </div>
-        <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:${bar}%;background:${c};border-radius:4px;transition:width .4s;"></div>
-        </div>
-        ${r.memo?`<div style="font-size:11px;color:var(--text3);margin-top:3px;">📝 ${r.memo}</div>`:''}
-      </div>`;
-    }).join('')}`;
+  if(el)el.innerHTML=withdrawalWidgetHtml(name);
 }
 
 // ══ ACTIONS (Supabase 연동) ══
@@ -2217,199 +2115,7 @@ async function saveLeave(){
   alert('기록되었습니다');
 }
 
-function calcRtRate(){
-  const total = parseFloat(document.getElementById('rt-total-students').value) || 0;
-  const newSt = parseFloat(document.getElementById('rt-new-students').value) || 0;
-  const exited = parseFloat(document.getElementById('rt-exited-students').value) || 0;
-  
-  const existing = total - newSt;
-  const base = existing + exited;
-  
-  if(base > 0) {
-    const rate = Math.round((existing / base) * 100);
-    const rateInput = document.getElementById('rt-rate');
-    rateInput.value = Math.max(0, Math.min(rate, 100));
-    document.getElementById('rt-rate-out').textContent = rateInput.value + ' %';
-  }
-}
-
-async function saveRetention(){
-  const teacher=document.getElementById('rt-teacher').value;
-  const month=document.getElementById('rt-month').value;
-  if(!teacher){alert('강사를 선택해주세요');return}
-  if(!month){alert('기록 월을 선택해주세요');return}
-  const rate=parseFloat(document.getElementById('rt-rate').value);
-  const memo=document.getElementById('rt-memo').value.trim();
-  // 같은 월에 같은 강사 기록이 있으면 덮어쓸지 확인
-  const existing=data.retentionRates.find(r=>r.teacher===teacher&&r.month===month);
-  if(existing){
-    if(!confirm(`${teacher}의 ${month} 기록이 이미 있습니다. 덮어쓸까요?`))return;
-    const {error:e0}=await sb.from('retention_rates').delete().eq('id',existing.id);
-    if(e0){alert('기존 기록 삭제 실패: '+e0.message);return}
-  }
-  const {error}=await sb.from('retention_rates').insert({teacher_name:teacher, rate, record_month:month, memo:memo||null});
-  if(error){alert('저장 실패: '+error.message);return}
-  await loadAll();render();
-  document.getElementById('rt-total-students').value='';
-  document.getElementById('rt-new-students').value='';
-  document.getElementById('rt-exited-students').value='';
-  document.getElementById('rt-memo').value='';
-  alert('등록률이 저장되었습니다!');
-}
-
-async function removeRetention(id){
-  if(!confirm('이 기록을 삭제할까요?'))return;
-  const {error}=await sb.from('retention_rates').delete().eq('id',id);
-  if(error){alert('삭제 실패: '+error.message);return}
-  await loadAll();render();
-}
-
-function renderRetention(){
-  renderAutoWithdrawal();
-  const logEl=document.getElementById('retention-log');
-  const monthlyEl=document.getElementById('retention-monthly');
-  if(!logEl||!monthlyEl) return;
-
-  // potential 강사 제외한 데이터 필터링
-  const activeTeacherNames = data.teachers.filter(t => t.branch !== 'potential').map(t => t.name);
-  const filteredRates = data.retentionRates.filter(r => activeTeacherNames.includes(r.teacher));
-
-  // 월별 평균 데이터 가공
-  const byMonth={};
-  filteredRates.forEach(r=>{
-    if(!byMonth[r.month]) byMonth[r.month]={sum:0,count:0,records:[]};
-    byMonth[r.month].sum+=r.rate;
-    byMonth[r.month].count+=1;
-    byMonth[r.month].records.push(r);
-  });
-  
-  const sortedMonths = Object.keys(byMonth).sort();
-  const displayMonths = [...sortedMonths].reverse();
-
-  // 연도 필터 초기화 (한 번만)
-  const yearSelect = document.getElementById('rt-year-filter');
-  if(yearSelect && yearSelect.options.length === 0) {
-    const years = [...new Set(filteredRates.map(r => r.month.split('-')[0]))].sort().reverse();
-    if(years.length === 0) years.push(new Date().getFullYear().toString());
-    yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}년</option>`).join('');
-  }
-  const currentYear = yearSelect?.value || new Date().getFullYear().toString();
-
-  // 월 선택 탭 생성
-  const monthTabs = document.getElementById('rt-month-tabs');
-  if(monthTabs) {
-    monthTabs.innerHTML = Array.from({length:12}, (_, i) => i + 1).map(m => {
-      const isActive = m === currentRtMonth;
-      const monthStr = `${currentYear}-${String(m).padStart(2, '0')}`;
-      const hasData = byMonth[monthStr];
-      return `<button onclick="currentRtMonth=${m};renderRetention()" class="btn btn-sm" style="flex-shrink:0; padding:6px 12px; border-radius:15px; background:${isActive?'var(--text)':'var(--bg2)'}; color:${isActive?'#fff':'var(--text2)'}; border:none; opacity:${hasData?1:0.4}">
-        ${m}월${hasData?` <span style="font-size:10px">●</span>`:''}
-      </button>`;
-    }).join('');
-  }
-
-  // 월별 평균 그래프
-  const ctxMonthly = document.getElementById('retention-chart-monthly')?.getContext('2d');
-  if(ctxMonthly && sortedMonths.length > 0) {
-    if(monthlyChart) monthlyChart.destroy();
-    monthlyChart = new Chart(ctxMonthly, {
-      type: 'line',
-      data: {
-        labels: sortedMonths,
-        datasets: [{
-          label: '평균 재등록률 (%)',
-          data: sortedMonths.map(m => (byMonth[m].sum / byMonth[m].count).toFixed(1)),
-          borderColor: '#1D9E75', backgroundColor: 'rgba(29, 158, 117, 0.1)',
-          borderWidth: 2, fill: true, tension: 0.3
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
-    });
-  }
-
-  // 상단 요약 리스트
-  if(!displayMonths.length){
-    monthlyEl.innerHTML='<div class="empty" style="padding:16px;font-size:13px">아직 기록이 없습니다</div>';
-  } else {
-    monthlyEl.innerHTML=displayMonths.slice(0,3).map(m=>{
-      const data_m=byMonth[m];
-      const avg=(data_m.sum/data_m.count).toFixed(1);
-      const cls = avg>=85?'rf-green':avg>=70?'rf-amber':'rf-red';
-      return `<div class="risk-row">
-        <div class="risk-label">${m}</div>
-        <div class="risk-track"><div class="risk-fill ${cls}" style="width:${Math.min(avg,100)}%"></div></div>
-        <div class="risk-num">${avg}%</div>
-      </div>
-      <div class="t-sub" style="font-size:11px;margin:-4px 0 10px 100px">${data_m.count}명 기록</div>`;
-    }).join('');
-  }
-
-  // 히스토리 필터링 로직
-  const teacherFilter = document.getElementById('rt-filter')?.value || '';
-  const selectedMonthStr = `${currentYear}-${String(currentRtMonth).padStart(2, '0')}`;
-  
-  let list = filteredRates;
-  if(teacherFilter) {
-    list = list.filter(r => r.teacher === teacherFilter);
-  } else {
-    // 전체 강사일 때는 선택된 달의 데이터만 표시
-    list = list.filter(r => r.month === selectedMonthStr);
-  }
-
-  // 강사별 그래프 (강사 필터 시에만)
-  const chartContainer = document.getElementById('retention-chart-teacher-container');
-  if(teacherFilter && list.length > 0) {
-    chartContainer.style.display = 'block';
-    const teacherHistory = filteredRates.filter(r => r.teacher === teacherFilter).sort((a,b) => a.month.localeCompare(b.month));
-    const ctxTeacher = document.getElementById('retention-chart-teacher')?.getContext('2d');
-    if(ctxTeacher) {
-      if(teacherChart) teacherChart.destroy();
-      teacherChart = new Chart(ctxTeacher, {
-        type: 'bar',
-        data: {
-          labels: teacherHistory.map(d => d.month),
-          datasets: [{
-            label: '재등록률 (%)',
-            data: teacherHistory.map(d => d.rate),
-            backgroundColor: teacherHistory.map(d => d.rate >= 85 ? '#1D9E75' : d.rate >= 70 ? '#EF9F27' : '#E24B4A'),
-            borderRadius: 4
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
-      });
-    }
-  } else {
-    chartContainer.style.display = 'none';
-  }
-
-  if(!list.length){
-    logEl.innerHTML=`<div class="empty">${teacherFilter ? '기록이 없습니다' : selectedMonthStr + ' 기록이 없습니다'}</div>`;
-    return;
-  }
-  
-  list.sort((a,b) => b.month.localeCompare(a.month) || a.teacher.localeCompare(b.teacher));
-  
-  logEl.innerHTML = list.map(r => {
-    const cls = r.rate>=85?'b-safe':r.rate>=70?'b-warn':'b-danger';
-    return `<div class="log-item">
-      <div class="log-header">
-        <div><strong>${r.teacher}</strong> · <span style="font-size:12px;color:var(--text3)">${r.month}</span></div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="badge ${cls}">${r.rate}%</span>
-          <button class="btn btn-sm" style="padding:2px 6px;font-size:11px;color:var(--red-text);border-color:var(--red)" onclick="removeRetention(${r.id})">삭제</button>
-        </div>
-      </div>
-      ${r.memo?`<div class="log-detail">${r.memo}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-// 강사별 가장 최신 등록률
-function latestRetention(teacherName){
-  const records=data.retentionRates.filter(r=>r.teacher===teacherName);
-  if(!records.length) return null;
-  return records.sort((a,b)=>b.month.localeCompare(a.month))[0];
-}
+function renderRetention(){renderAutoWithdrawal();}
 
 async function updateQuota(name,v){
   const quota=parseInt(v)||15;
@@ -2502,8 +2208,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
   const today=new Date().toISOString().split('T')[0];
   ['t-start','iv-date','lv-date','ex-date','gr-date','sal-date'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=i==='sal-date'?salaryDateKST():today});
-  const thisMonth=today.slice(0,7);
-  const rtMonth=document.getElementById('rt-month');if(rtMonth)rtMonth.value=thisMonth;
   const e=new Date();e.setFullYear(e.getFullYear()+1);
   const tEnd=document.getElementById('t-end');if(tEnd)tEnd.value=e.toISOString().split('T')[0];
 
@@ -2734,4 +2438,3 @@ async function saveEdit(){
 </script>
 </body>
 </html>
-
