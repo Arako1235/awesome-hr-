@@ -532,8 +532,9 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
 
 <!-- ══ RETENTION ══ -->
 <div id="page-retention" class="page">
-  <div class="page-title">재등록률 기록</div>
-  <div class="page-sub">신규생을 제외한 순수 재등록률을 계산하여 강사의 유지력을 추적합니다</div>
+  <div class="page-title">재등록률 · 퇴원율</div>
+  <div class="page-sub">경영 원장의 자동 퇴원율과 수동 재등록률 기록을 함께 확인합니다</div>
+  <div id="auto-withdrawal-overview"></div>
 
   <div class="card">
     <div class="card-title">이번 달 등록률 기록</div>
@@ -759,7 +760,7 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
         <button class="tab-inner-btn" onclick="switchInner('salary',this)">💰 급여 히스토리</button>
         <button class="tab-inner-btn" onclick="switchInner('growth',this)">📈 성장 기록</button>
         <button class="tab-inner-btn" onclick="switchInner('interviews',this)">💬 면담 히스토리</button>
-        <button class="tab-inner-btn" onclick="switchInner('retention',this)">📊 등록률</button>
+        <button class="tab-inner-btn" onclick="switchInner('retention',this)">📊 재등록·퇴원율</button>
       </div>
       <div id="inner-info" class="inner-panel active"></div>
       <div id="inner-growth" class="inner-panel"></div>
@@ -1074,7 +1075,7 @@ const GROUPS = {
 };
 const GROUP_LABELS = {
   teachers: [['teachers','👥 재직 강사'],['exited','📁 퇴사자'],['onboarding','🚀 온보딩']],
-  records:  [['interview','💬 면담'],['checkin','✅ 체크인'],['leave','📅 연차'],['retention','📈 등록률']],
+  records:  [['interview','💬 면담'],['checkin','✅ 체크인'],['leave','📅 연차'],['retention','📈 재등록·퇴원율']],
   more:     [['contract','📋 계약 일정'],['signals','⚠️ 이탈 신호 가이드'],['birthday','🎂 생일'],['settings','⚙️ 설정']]
 };
 const TOP_TABS = ['dashboard','teachers','records','more'];
@@ -1978,15 +1979,44 @@ function renderInnerCheckins(name){
     :'<div class="empty">체크인 기록 없음</div>';
 }
 
+
+// Automatic withdrawal rates stay inside the authenticated management origin.
+function withdrawalTeacherKey(value){
+  const clean=String(value||'').normalize('NFKC').trim().replace(/^T\.\s*/i,'');
+  const english=clean.match(/^([A-Za-z][A-Za-z .'-]*?)\s+[가-힣]/);
+  return (english?english[1]:clean).replace(/\s+/g,' ').toLocaleLowerCase('en');
+}
+function withdrawalWidgetHtml(name=''){
+  const key=withdrawalTeacherKey(name);
+  const names=[...new Set([...data.teachers,...data.exited].map(t=>t.name).filter(Boolean))];
+  const ambiguous=name&&names.filter(n=>withdrawalTeacherKey(n)===key).length>1;
+  const url=new URL('https://awesome-office.vercel.app/teacher-retention/');
+  if(name&&!ambiguous)url.searchParams.set('teacher',name);
+  const href=candidateEscape(url.href);
+  return `<section class="card auto-withdrawal-widget">
+    <div class="card-title">교사별 퇴원율 · 경영 원장 자동 연동</div>
+    <p style="font-size:12px;color:var(--text3);line-height:1.7">퇴원 당시 담임 기준으로 월별 퇴원 수와 퇴원율을 표시합니다. 기존 경영 계정으로 로그인하세요. 창 안에서 로그인이나 표시가 되지 않으면 <a href="${href}" target="_blank" rel="noopener noreferrer">경영 앱에서 열기 ↗</a>를 눌러 주세요.</p>
+    ${ambiguous?'<p style="color:#b45309;font-size:12px">같은 영문명을 쓰는 교사가 있어 자동 선택을 보류했습니다. 경영 원장의 담임과 캠퍼스를 직접 확인해 주세요.</p>':''}
+    <iframe title="경영 원장 교사별 퇴원율" src="${href}" loading="lazy" referrerpolicy="no-referrer" style="display:block;width:100%;height:620px;border:1px solid var(--border,#e2e8e4);border-radius:12px;background:#f8faf8"></iframe>
+    <p style="font-size:11px;color:var(--text3);line-height:1.7">월 퇴원생 수 ÷ 월초 담당 학생 수 × 100. 확정 원장의 담당 인원이 없는 달은 계산 대기로 표시됩니다. 아래 수동 재등록률과 계산 기준이 다릅니다.</p>
+  </section>`;
+}
+function renderAutoWithdrawal(){
+  const host=document.getElementById('auto-withdrawal-overview');
+  if(host&&!host.querySelector('iframe'))host.innerHTML=withdrawalWidgetHtml();
+}
+
 function renderInnerRetention(name){
   const rs=(data.retentionRates||[]).filter(r=>r.teacher===name).sort((a,b)=>b.month.localeCompare(a.month));
   const el=document.getElementById('inner-retention');
   if(!el)return;
-  if(!rs.length){el.innerHTML='<div class="empty">등록률 기록 없음</div>';return;}
+  if(!rs.length){el.innerHTML=withdrawalWidgetHtml(name)+'<div class="empty">수동 재등록률 기록 없음</div>';return;}
   const avg=Math.round(rs.reduce((s,r)=>s+r.rate,0)/rs.length*10)/10;
   const latest=rs[0].rate;
+  const autoWidget=withdrawalWidgetHtml(name);
   const color=latest>=80?'var(--green)':latest>=60?'#f59e0b':'#ef4444';
-  el.innerHTML=`
+  el.innerHTML=autoWidget+`
+    <h3 style="font-size:14px;margin:20px 0 12px">수동 재등록률 기록</h3>
     <div style="display:flex;gap:16px;margin-bottom:16px;">
       <div style="flex:1;background:var(--bg2);border-radius:12px;padding:14px;text-align:center;">
         <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:4px;">최근 등록률</div>
@@ -2259,6 +2289,7 @@ async function removeRetention(id){
 }
 
 function renderRetention(){
+  renderAutoWithdrawal();
   const logEl=document.getElementById('retention-log');
   const monthlyEl=document.getElementById('retention-monthly');
   if(!logEl||!monthlyEl) return;
