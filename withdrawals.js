@@ -62,7 +62,7 @@ function renderNativeWithdrawal(id){
  const teachers=[...new Set(v.rows.map(r=>r.teacher))].sort();
  const controls=`<div class="aw-filters"><label>기준 월<select onchange="setWithdrawalFilter(${id},'month',this.value)">${months.length?months.map(m=>`<option value="${m}"${m===v.month?' selected':''}>${m}</option>`).join(''):'<option>자료 없음</option>'}</select></label><label>캠퍼스<select onchange="setWithdrawalFilter(${id},'campus',this.value)"><option value="all"${v.campus==='all'?' selected':''}>전체</option><option value="gongneung"${v.campus==='gongneung'?' selected':''}>공릉</option><option value="junggye"${v.campus==='junggye'?' selected':''}>중계</option></select></label>${!v.name||v.ambiguous?`<label>퇴원 당시 담임<select onchange="setWithdrawalFilter(${id},'teacher',this.value)"><option value="">전체 교사</option>${teachers.map(t=>`<option value="${candidateEscape(t)}"${t===v.teacher?' selected':''}>${candidateEscape(t)}</option>`).join('')}</select></label>`:''}</div>`;
  const coverage=`확인된 집계 ${summary.verified}개${summary.pending?' · 확인 필요 '+summary.pending+'개':''}`;
- const cards=`<div class="aw-summary"><div><span>${v.month||'최근 월'} 퇴원율</span><strong>${withdrawalPercent(summary.rate)}</strong><small>${coverage}</small></div><div><span>확인된 기간 퇴원율</span><strong>${withdrawalPercent(average.rate)}</strong><small>${average.verified}개 집계 기준${average.pending?' · '+average.pending+'개 확인 필요':''}</small></div></div>`;
+ const cards=`<div class="aw-summary"><div><span>${v.month||'최근 월'} ${v.name||v.teacher?'퇴원율':'확인된 교사 퇴원율'}</span><strong>${withdrawalPercent(summary.rate)}</strong><small>${coverage}</small></div><div><span>확인된 기간 퇴원율</span><strong>${withdrawalPercent(average.rate)}</strong><small>${average.verified}개 집계 기준${average.pending?' · '+average.pending+'개 확인 필요':''}</small></div></div>`;
  const chartMonths=[...new Set(rows.map(r=>r.month))].sort();
  const chart=`<div class="aw-trend"><h4>월별 퇴원율 추이</h4><div class="aw-chart"><canvas id="aw-chart-${id}" role="img" aria-label="인원이 확인된 교사별 월별 퇴원율 추이"></canvas></div><p class="aw-note">월초 인원이 확인된 집계만 반영 · 퇴원 합계 ÷ 월초 담당 인원 합계 · 미확인 월은 빈칸</p></div>`;
  const teacherCards=monthly.length?`<div class="aw-teacher-grid">${monthly.map(r=>`<div class="aw-teacher"><div class="aw-row-top"><span>${candidateEscape(r.teacher)} <small>${r.campus==='gongneung'?'공릉':'중계'}</small></span><strong class="${r.rate===null?'aw-pending':''}">${withdrawalPercent(r.rate)}</strong></div><div class="aw-bar"><i style="width:${r.rate===null?0:Math.min(100,r.rate)}%"></i></div><p class="aw-note">퇴원 ${r.withdrawals}명 · 월초 ${r.opening===null?'미확인':r.opening+'명'}</p>${r.rate===null?`<p class="aw-pending-note">${candidateEscape(r.status)}</p>`:''}</div>`).join('')}</div>`:'<p class="aw-note">선택한 월에 연결된 교사 기록이 없습니다. 미등록은 0명으로 계산하지 않습니다.</p>';
@@ -78,10 +78,11 @@ function receiveWithdrawalMessage(event){
  const message=event.data;if(!message||message.type!=='awesome:teacher-withdrawals'||message.version!==1||!['ready','loading','auth-required','cleared','error'].includes(message.state))return;
  const frame=Array.from(document.querySelectorAll('.aw-frame')).find(f=>f.contentWindow===event.source);if(!frame)return;
  const id=Number(frame.dataset.withdrawalView),v=withdrawalViews.get(id);if(!v)return;
- if(message.state==='ready'&&(!validWithdrawalRows(message.rows)||typeof message.updated!=='string')){v.state='error';v.rows=[];renderNativeWithdrawal(id);return}
+ if(message.state==='ready'&&(!validWithdrawalRows(message.rows)||typeof message.updated!=='string')){if(v.timer)window.clearTimeout(v.timer);v.state='error';v.rows=[];renderNativeWithdrawal(id);return}
  v.state=message.state;v.rows=message.state==='ready'?message.rows.map(r=>({month:r.month,campus:r.campus,teacher:r.teacher,withdrawals:r.withdrawals,opening:r.opening,rate:r.rate,status:r.status})):[];
  v.updated=message.state==='ready'?message.updated.slice(0,80):'';
- if(v.timer)window.clearTimeout(v.timer);if(v.state==='ready')armWithdrawalExpiry(id);
+ if(v.timer)window.clearTimeout(v.timer);if(v.state==='ready')armWithdrawalExpiry(id);else if(v.state==='loading')armWithdrawalExpiry(id,20000);
  renderNativeWithdrawal(id);
 }
 window.addEventListener('message',receiveWithdrawalMessage);
+
