@@ -55,11 +55,11 @@ function renderNativeWithdrawal(id){
   connection.hidden=false;return;
  }
  connection.hidden=true;frame.hidden=true;
- const rows=v.rows.filter(r=>(!v.name||v.ambiguous||withdrawalTeacherKey(r.teacher)===withdrawalTeacherKey(v.name))&&(v.campus==='all'||r.campus===v.campus)&&(!v.teacher||withdrawalTeacherKey(r.teacher)===withdrawalTeacherKey(v.teacher)));
- const months=[...new Set(v.rows.map(r=>r.month))].sort().reverse();
+ const rows=v.rows.filter(r=>r.month>='2026-01'&&(!v.name||v.ambiguous||withdrawalTeacherKey(r.teacher)===withdrawalTeacherKey(v.name))&&(v.campus==='all'||r.campus===v.campus)&&(!v.teacher||withdrawalTeacherKey(r.teacher)===withdrawalTeacherKey(v.teacher)));
+ const months=[...new Set(v.rows.filter(r=>r.month>='2026-01').map(r=>r.month))].sort().reverse();
  if(!months.includes(v.month))v.month=months[0]||'';
  const monthly=rows.filter(r=>r.month===v.month),summary=withdrawalAverage(monthly),average=withdrawalAverage(rows);
- const teachers=[...new Set(v.rows.map(r=>r.teacher))].sort();
+ const teachers=[...new Map(v.rows.filter(r=>r.month>='2026-01').map(r=>[withdrawalTeacherKey(r.teacher),r.teacher])).values()].sort();
  const controls=`<div class="aw-filters"><label>기준 월<select onchange="setWithdrawalFilter(${id},'month',this.value)">${months.length?months.map(m=>`<option value="${m}"${m===v.month?' selected':''}>${m}</option>`).join(''):'<option>자료 없음</option>'}</select></label><label>캠퍼스<select onchange="setWithdrawalFilter(${id},'campus',this.value)"><option value="all"${v.campus==='all'?' selected':''}>전체</option><option value="gongneung"${v.campus==='gongneung'?' selected':''}>공릉</option><option value="junggye"${v.campus==='junggye'?' selected':''}>중계</option></select></label>${!v.name||v.ambiguous?`<label>퇴원 당시 담임<select onchange="setWithdrawalFilter(${id},'teacher',this.value)"><option value="">전체 교사</option>${teachers.map(t=>`<option value="${candidateEscape(t)}"${t===v.teacher?' selected':''}>${candidateEscape(t)}</option>`).join('')}</select></label>`:''}</div>`;
  const coverage=`확인된 집계 ${summary.verified}개${summary.pending?' · 확인 필요 '+summary.pending+'개':''}`;
  const cards=`<div class="aw-summary"><div><span>${v.month||'최근 월'} ${v.name||v.teacher?'퇴원율':'확인된 교사 퇴원율'}</span><strong>${withdrawalPercent(summary.rate)}</strong><small>${coverage}</small></div><div><span>확인된 기간 퇴원율</span><strong>${withdrawalPercent(average.rate)}</strong><small>${average.verified}개 집계 기준${average.pending?' · '+average.pending+'개 확인 필요':''}</small></div></div>`;
@@ -67,7 +67,7 @@ function renderNativeWithdrawal(id){
  const chart=`<div class="aw-trend"><h4>월별 퇴원율 추이</h4><div class="aw-chart"><canvas id="aw-chart-${id}" role="img" aria-label="인원이 확인된 교사별 월별 퇴원율 추이"></canvas></div><p class="aw-note">월초 인원이 확인된 집계만 반영 · 퇴원 합계 ÷ 월초 담당 인원 합계 · 미확인 월은 빈칸</p></div>`;
  const teacherCards=monthly.length?`<div class="aw-teacher-grid">${monthly.map(r=>`<div class="aw-teacher"><div class="aw-row-top"><span>${candidateEscape(r.teacher)} <small>${r.campus==='gongneung'?'공릉':'중계'}</small></span><strong class="${r.rate===null?'aw-pending':''}">${withdrawalPercent(r.rate)}</strong></div><div class="aw-bar"><i style="width:${r.rate===null?0:Math.min(100,r.rate)}%"></i></div><p class="aw-note">퇴원 ${r.withdrawals}명 · 월초 ${r.opening===null?'미확인':r.opening+'명'}</p>${r.rate===null?`<p class="aw-pending-note">${candidateEscape(r.status)}</p>`:''}</div>`).join('')}</div>`:'<p class="aw-note">선택한 월에 연결된 교사 기록이 없습니다. 미등록은 0명으로 계산하지 않습니다.</p>';
  const history=v.name||v.teacher?`<div class="aw-history"><h4>월별 기록</h4>${[...rows].sort((a,b)=>b.month.localeCompare(a.month)||a.campus.localeCompare(b.campus)).map(withdrawalBar).join('')||'<p class="aw-note">연결된 원장 기록이 없습니다.</p>'}</div>`:'';
- host.innerHTML=(v.ambiguous?'<p class="aw-pending-note">같은 영문명의 교사가 있어 자동 선택을 보류했습니다. 담임과 캠퍼스를 확인해 주세요.</p>':'')+controls+cards+chart+`<h4 class="aw-section-title">${v.month} ${v.name?'담당 기록':'교사별 기록'}</h4>`+teacherCards+history+`<p class="aw-footnote">${candidateEscape(v.updated)} 갱신 · 퇴원 당시 담임 기준 · 아래 수동 재등록률과 계산 기준이 다릅니다.</p>`;
+ host.innerHTML=(v.ambiguous?'<p class="aw-pending-note">같은 영문명의 교사가 있어 자동 선택을 보류했습니다. 담임과 캠퍼스를 확인해 주세요.</p>':'')+controls+cards+chart+`<h4 class="aw-section-title">${v.month} ${v.name?'담당 기록':'교사별 기록'}</h4>`+teacherCards+history+`<p class="aw-footnote">${candidateEscape(v.updated)} 갱신 · 퇴원 당시 담임 기준 · 2026년 1월부터 원장 자동 연동</p>`;
  if(typeof Chart==='function'&&chartMonths.length){
   const values=chartMonths.map(month=>withdrawalAverage(rows.filter(r=>r.month===month)).rate);
   v.chart=new Chart(document.getElementById('aw-chart-'+id),{type:'line',data:{labels:chartMonths,datasets:[{label:'자동 퇴원율',data:values,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,.08)',fill:true,tension:.2,spanGaps:false,pointRadius:4,pointHoverRadius:6}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'퇴원율 '+Number(c.parsed.y).toFixed(1)+'%'}}},scales:{y:{beginAtZero:true,ticks:{callback:value=>value+'%'},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false},ticks:{maxRotation:0,maxTicksLimit:6}}}}});
@@ -85,4 +85,3 @@ function receiveWithdrawalMessage(event){
  renderNativeWithdrawal(id);
 }
 window.addEventListener('message',receiveWithdrawalMessage);
-
