@@ -533,7 +533,8 @@ input[type=range]{width:100%;accent-color:var(--green);margin:4px 0}
 
 <!-- ══ RETENTION ══ -->
 <div id="page-retention" class="page">
-  <div class="page-header"><h1>교사별 퇴원율</h1><p>2026년 1월부터 경영 원장과 자동 연동 · 퇴원 당시 담임 기준</p></div>
+  <div class="page-title">교사별 퇴원율</div>
+  <div class="page-sub">2026년 1월부터 경영 원장과 자동 연동 · 퇴원 당시 담임 기준</div>
   <div id="auto-withdrawal-overview"></div>
 </div>
 
@@ -1302,7 +1303,6 @@ function renderDash(){
 
 function tCard(t){
   const salary=currentSalaryAt(t);
-  const retBadge='';
   return `<div draggable="true" data-id="${t.id}"
     ondragstart="dragStart(event)" ondragover="dragOver(event)"
     ondrop="dragDrop(event)" ondragend="dragEnd(event)"
@@ -1318,8 +1318,7 @@ function tCard(t){
       <span class="badge b-${sc(t)}" style="font-size:10px;flex-shrink:0">${t.branch==='potential'?'Potential':scL(t)}</span>
     </div>
     <!-- 중간: 등록률 + 부가정보 -->
-    ${(retBadge||t.start||salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
-      ${retBadge}
+    ${(t.start||salary||t.birth)?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 44px;font-size:11px;color:var(--text2);align-items:center">
       ${t.start?`<span>${moIn(t.start)}개월</span>`:''}
       ${salary?`<span>· ${fmtSal(salary)}</span>`:''}
       ${t.birth?`<span>· 🎂${(function(){const d=parseDate(t.birth);return d?(d.getMonth()+1)+'월 '+d.getDate()+'일':''})()}</span>`:''}
